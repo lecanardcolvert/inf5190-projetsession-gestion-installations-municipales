@@ -1,4 +1,17 @@
-*.swp
+# Compiled files
 *.pyc
-*.zip
 _pycache__/
+
+# Environnement
+.env/
+.venv/
+env/
+venv/
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+
+# Other
+*.zip
