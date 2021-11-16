@@ -1,7 +1,22 @@
-Projet de session -- INF5190-A2021
+Projet de session
 =========================
+## Description
 
-## Crédits
+Ce projet a été créé dans le cadre du cours Web Avancée (INF5190) à l’UQAM.
+
+Ceci est un travail du cours ci-dessous
+
+   * **Cours** : *Programmation Web Avancée*
+   * **Sigle** : *INF5190*
+   * **Session** : *Automne 2021*
+   * **Université** : *Université du Québec à Montréal (UQAM)*
+
+## Auteurs
+
++ Alex, XXXXXX **(XXXXXXXXXXXX)**
++ Sally Junior Jean Axel, SALLY **(SALS20029908)**
+
+## Environnement de développement
 
 La majorité de cette documentation a été produite par François-Xavier
 Guillemette. Cette documentation est utilisée avec permission de l'auteur et la
@@ -9,6 +24,7 @@ version originale est disponible à l'adresse https://github.com/fxg42/inf2050-e
 
 ## :clipboard: Prérequis
 
+- Python version 3.9.0 et plus
 - VirtualBox: https://www.virtualbox.org/wiki/Downloads
 - Vagrant: https://www.vagrantup.com/downloads.html
 - git: https://git-scm.com/downloads
@@ -59,38 +75,6 @@ Dans cmd, powershell, cmder ou tout autre terminal:
     $ vagrant reload
 
 
-## :bomb: Troubleshooting
-
-### VT-x is disabled in the BIOS for all CPU modes
-
-Le message suivant peut subvenir lors de la première exécution de Vagrant:
-
-    VBoxManage.exe: error: Not in a hypervisor partition (HVP=0) (VERR_NEM_NOT_AVAILABLE).
-    VBoxManage.exe: error: VT-x is disabled in the BIOS for all CPU modes (VERR_VMX_MSR_ALL_VMX_DISABLED)
-
-Les architectures Intel requièrent parfois l'activation des extensions de
-virtualisation (VT-x) dans le BIOS de votre ordinateur. Vérifiez la
-documentation du manufacturier pour savoir comment entrer dans le BIOS
-(généralement en appuyant sur F2 ou F12 au boot). Vous pourrez alors activer
-l'option.
-
-L'option équivalente pour les architectures AMD (AMD-V) est habituellement déjà
-activée et la modification du BIOS n'est pas nécessaire.
-
-
-### The guest machine entered an invalid state while waiting for it to boot.
-
-Ce message d'erreur vagrant peut apparaître pour différentes raisons.
-
-Vérifiez d'abord que les extensions de virtualisation sont activées dans le
-BIOS et que vous utilisez une version à jour de VirtualBox et que celle-ci est
-adéquate pour votre système d'exploitation.
-
-L'exécution de la commande `vagrant reload` peut être suffisante pour régler le
-problème. L'exécution de `vagrant destroy` puis de `vagrant up` pourrait être
-nécessaire.
-
-
 ## Développement avec Python3 et Flask
 
 ### Activation de l'environnement virtuel
@@ -112,12 +96,16 @@ Uniquement les librairies présentes dans `requirements.txt` sont permises.
     $ cd /vagrant
     $ sudo pip install -r requirements.txt
 
-Vous êtes prêts à développer.
+Vous êtes prêts à développer. Voici la commande pour lancer le serveur:
+
+    $ make run
 
 ### Tests dans un fureteur
 
 Lors de la connexion à la VM via SSH, le système d'exploitation vous donnera
-l'adresse IP de la VM. Prenez l'adresse IP de l'interface eth1.
+l'adresse IP de la VM. Prenez l'adresse IP de l'interface `eth1`. Sinon entrez cette commande dans votre terminal pour récupérer l'adresse IP.
+
+    $ ip a | grep eth1
 
 Une fois l'application Flask lancée dans votre VM, utilisez le fureteur de votre
 ordinateur pour accéder à l'application Flask. Vous pouvez y accéder en
