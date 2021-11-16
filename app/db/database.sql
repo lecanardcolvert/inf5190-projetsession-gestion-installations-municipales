@@ -1,0 +1,69 @@
+CREATE TABLE IF NOT EXISTS `Arrondissement` (
+	`id`		INTEGER	NOT NULL PRIMARY KEY AUTOINCREMENT,
+    `nom`		TEXT NOT NULL,
+	`cle`		TEXT,
+	`dateMaj`	TEXT
+);
+
+CREATE TABLE IF NOT EXISTS `LieuGestion` (
+	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`nom`	TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `LieuPropriete` (
+	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`nom`	TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `Lieu` (
+	`id` 		INTEGER	NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`arrondissementId` 		INTEGER	NOT NULL,
+	`lieuProprieteId` 		INTEGER	NOT NULL,
+	`lieuGestionId` 		INTEGER	NOT NULL,
+	`nom`		TEXT NOT NULL,
+	`adresse` 	TEXT NOT NULL,
+	FOREIGN KEY(arrondissementId)	REFERENCES Arrondissement(id),
+	FOREIGN KEY(lieuProprieteId)	REFERENCES LieuPropriete(id),
+	FOREIGN KEY(lieuGestionId)		REFERENCES LieuGestion(id)
+);
+
+CREATE TABLE IF NOT EXISTS `PiscineType` (
+	`id`	INTEGER	NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`nom`	TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `Piscine` (
+	`id`			INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`piscineTypeId` 		INTEGER	NOT NULL,
+	`lieuId` 		INTEGER	NOT NULL,
+	`equipement`	TEXT,
+    FOREIGN KEY(piscineTypeId)	REFERENCES PiscineType(id),
+    FOREIGN KEY(lieuId) REFERENCES Lieu(id)
+);
+
+CREATE TABLE IF NOT EXISTS `Glissade` (
+	`id`		INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`arrondissementId` 		INTEGER	NOT NULL,
+	`nom`		TEXT NOT NULL,
+	`ouvert`	INTEGER NOT NULL,
+	`deblaye`	INTEGER NOT NULL,
+	`condition` INTEGER NOT NULL,
+    FOREIGN KEY(arrondissementId)	REFERENCES Arrondissement(id)
+);
+
+CREATE TABLE IF NOT EXISTS `Patinoire` (
+	`id`			INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`nom`			TEXT NOT NULL,
+	`dateHeure`	TEXT NOT NULL,
+	`ouvert`		INTEGER NOT NULL,
+	`deblaye`		INTEGER NOT NULL,
+	`arrose`		INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS `Utilisateur` (
+	`id`			INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`nomComplet`	TEXT NOT NULL,
+	`courriel`		TEXT NOT NULL,
+	`salt`			TEXT NOT NULL,
+	`mdp`			TEXT NOT NULL
+);
