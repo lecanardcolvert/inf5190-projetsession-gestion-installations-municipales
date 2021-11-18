@@ -13,7 +13,7 @@ Ceci est un travail du cours ci-dessous
 
 ## Auteurs
 
-+ Alex, XXXXXX **(XXXXXXXXXXXX)**
++ H. Bourdeau, Alexandre **(HAMA12128907)**
 + Sally Junior Jean Axel, SALLY **(SALS20029908)**
 
 ## Environnement de développement
