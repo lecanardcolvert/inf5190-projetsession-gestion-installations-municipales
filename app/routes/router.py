@@ -1,8 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 router = Blueprint("router", __name__)
 
 
 @router.route('/')
 def home():
-    return "Hello, world! from Victor Ziguehi"
+    return render_template('index.html')
