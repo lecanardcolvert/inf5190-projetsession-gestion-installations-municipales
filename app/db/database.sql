@@ -47,17 +47,19 @@ CREATE TABLE IF NOT EXISTS `Glissade` (
 	`nom`		TEXT NOT NULL,
 	`ouvert`	INTEGER NOT NULL,
 	`deblaye`	INTEGER NOT NULL,
-	`condition` INTEGER NOT NULL,
+	-- `condition` INTEGER NOT NULL,
     FOREIGN KEY(arrondissementId)	REFERENCES Arrondissement(id)
 );
-
+-- FAIRE UNE LISTE DE CONDITION CAR UNE PATINOIRE À PLUSIEURS CONDITION
 CREATE TABLE IF NOT EXISTS `Patinoire` (
 	`id`			INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+	`arrondissementId` 		INTEGER	NOT NULL,
 	`nom`			TEXT NOT NULL,
 	`dateHeure`	TEXT NOT NULL,
 	`ouvert`		INTEGER NOT NULL,
 	`deblaye`		INTEGER NOT NULL,
 	`arrose`		INTEGER NOT NULL
+	FOREIGN KEY(arrondissementId)	REFERENCES Arrondissement(id),
 );
 
 CREATE TABLE IF NOT EXISTS `Utilisateur` (
@@ -67,3 +69,19 @@ CREATE TABLE IF NOT EXISTS `Utilisateur` (
 	`salt`			TEXT NOT NULL,
 	`mdp`			TEXT NOT NULL
 );
+
+INSTALLATIONS
+- ID
+- TYPE => GLISSADE, PATINOIRE, PISCINE
+- INSTALLATIONS_ID
+  - GLISSADE ID
+  - Patinoire ID
+  - PISCINE id
+
+
+GLISSADE | 1
+PATINOIRE | 1
+
+select *
+from installation join glissade
+where INSTALLATIONS_ID == glissade.id
