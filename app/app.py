@@ -28,13 +28,13 @@ with app.app_context():
 
 
 @app.errorhandler(404)
-def not_found(e):
-    return render_template('404.html')
+def not_found(error):
+    return render_template('404.html'), 404
 
 
 @app.errorhandler(405)
-def method_not_allowed(e):
-    return render_template('405.html')
+def method_not_allowed(error):
+    return render_template('405.html'), 405
 
 
 if '__main__' == __name__:
