@@ -20,6 +20,12 @@ app.register_blueprint(router)
 with app.app_context():
     db.create_all()
 
+    # TODO: replace by auto-insert script
+    date_en_iso = datetime.strptime('31 December 2020', '%d %B %Y').date()
+    arr = Arrondissement(nom='Gotham City', cle='GC', dateMaj=date_en_iso)
+    db.session.add(arr)
+    db.session.commit()
+
 
 @app.errorhandler(404)
 def not_found(e):

@@ -1,9 +1,8 @@
-from dataclasses import dataclass
+from utils.shared import db
 
 
-@dataclass
-class Arrondissement:
-    id: int
-    nom: str
-    cle: str
-    dateMaj: str
+class Arrondissement(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nom = db.Column(db.String(100), unique=True)
+    cle = db.Column(db.String(50))
+    dateMaj = db.Column(db.DateTime)
