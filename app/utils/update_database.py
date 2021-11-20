@@ -28,9 +28,9 @@ try:
     print("------------------------------")
     content = response2.data.decode()
     file = StringIO(content)
-    data2 = csv.reader(content)
-    for row in data2:
-        print(row)
+    data = csv.reader(file, delimiter=",")
+    for row in data:
+        print(row[3])
     # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
     print("------------------------------")
     data = xmltodict.parse(response3.data)
