@@ -29,11 +29,20 @@ try:
     content = response2.data.decode()
     file = StringIO(content)
     data = csv.reader(file, delimiter=",")
-    for row in data:
-        print(row[3])
+    next(data)
+    row1 = next(data)
+    print(row1)
+    # for row in data:
+    #    print(row[3])
     # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
     print("------------------------------")
     data = xmltodict.parse(response3.data)
     print(data["MAIN"]["arrondissement"][0]["nom_arr"])
+    patinoire = data["MAIN"]["arrondissement"][0]["patinoire"]
+    patinoire_condition = patinoire["condition"]
+    print(
+        f"la 1ere patinoire du 1er arrondissement à {len(patinoire_condition)} conditions"
+    )
+    print(patinoire_condition[len(patinoire_condition) - 1])
 except:
     print("Failed to parse xml from response (%s)" % traceback.format_exc())
