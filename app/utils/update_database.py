@@ -1,4 +1,6 @@
 import traceback
+import re
+import json
 import urllib3
 import xmltodict
 import csv
@@ -24,25 +26,44 @@ response2 = http.request("GET", piscine_url)
 response3 = http.request("GET", patinoire_url)
 try:
     data = xmltodict.parse(response.data)
-    print(data["glissades"]["glissade"][0]["nom"])
-    print("------------------------------")
+    #    print(data["glissades"]["glissade"][0]["nom"])
+
+    #   print("--------------AQUATIQUE----------------")
     content = response2.data.decode()
     file = StringIO(content)
     data = csv.reader(file, delimiter=",")
     next(data)
     row1 = next(data)
-    print(row1)
+    #  print(row1)
     # for row in data:
     #    print(row[3])
     # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
-    print("------------------------------")
-    data = xmltodict.parse(response3.data)
-    print(data["MAIN"]["arrondissement"][0]["nom_arr"])
-    patinoire = data["MAIN"]["arrondissement"][0]["patinoire"]
-    patinoire_condition = patinoire["condition"]
-    print(
-        f"la 1ere patinoire du 1er arrondissement à {len(patinoire_condition)} conditions"
+
+    print("--------------PATINOIRE----------------")
+    xml = response3.data.decode("utf-8")
+    xml = re.sub("\n", "", xml)
+    xml = re.sub("> +<", "><", xml)
+    xml = re.sub(
+        "</condition><nom_pat>", "</condition></patinoire><patinoire><nom_pat>", xml
     )
-    print(patinoire_condition[len(patinoire_condition) - 1])
+    data = xmltodict.parse(xml, dict_constructor=dict)
+    arrondissements = data["MAIN"]["arrondissement"]
+    print(json.dumps(data["MAIN"], indent=4))
+# for arrondissement in arrondissements:
+# nom_arr = arrondissement["nom_arr"]
+# patinoires = arrondissement["patinoire"]
+# #      print(f"\tPatinoire => '{patinoires['nom_pat']}'")
+# for patinoire in patinoires:
+# nom_pat = patinoire[0]
+#          print(f"\tPatinoire => '{patinoire}'")
+#     print(f"Arrondissement => {nom_arr}")
+# print(data["MAIN"]["arrondissement"][0]["nom_arr"])
+# patinoire = data["MAIN"]["arrondissement"][0]["patinoire"]
+# patinoire_condition = patinoire["condition"]
+# print(
+# f"la 1ere patinoire du 1er arrondissement à {len(patinoire_condition)} conditions"
+# )
+# print(patinoire_condition[len(patinoire_condition) - 1])
+
 except:
     print("Failed to parse xml from response (%s)" % traceback.format_exc())
