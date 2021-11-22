@@ -1,11 +1,13 @@
-import traceback
-from datetime import datetime
+# Native and installed modules
+import csv
 import re
+import traceback
 import urllib3
 import xmltodict
-import csv
+from datetime import datetime
 from io import StringIO
 
+# Custom modules
 from utils.shared import db
 from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
