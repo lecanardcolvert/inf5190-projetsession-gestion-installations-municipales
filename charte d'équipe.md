@@ -45,7 +45,8 @@ string_variable = ""
   faire du nommage et la taille des noms est moins long qu'en français.
 
 - **Les noms des variables** doivent être spécifique de sortes à ce qu’on puisse comprendre ce que fait la variable juste en lisant son nom. On ne devrait pas à chaque fois demander l’assistance d’un autre membre pour comprendre ce que fait une variable.
-  - Exemple : `quizz_score = 0` est plus significatif et plus compréhensible que `score = 0`
+  - Le nom doit **correspondre au contenu de la variable**
+  > Exemple : `quizz_score = 0` est plus significatif et plus compréhensible que `score = 0` ou `result_integer = 0`
 
 ### 2. Constantes
 
@@ -53,9 +54,12 @@ Les constantes sont écrites en **UPPER_SNAKE_CASE** et le nommage doit être si
 
 ### 3. Méthodes et fonctions
 
+- Elles doivent avoir une seule responsabilité (faire qu'une seule et unique chose)
+- Elles ne doivent pas dépasser 25 lignes (sauf cas exceptionnel **justifiable**)
 - Les nom des fonctions et des méthodes sont écrites en **snake_case**. Elles doivent avoir un nom
   siginificatif et être minimalement documentés.
 
+- La documentation suit les standards de PEP8 (_voir PEP257_ pour plus d'info)
 - La documentation devrait normalement être en anglais mais c'est à discuter avec les membres.
 
 - Si vous avez la possibilité de
@@ -77,22 +81,26 @@ Les constantes sont écrites en **UPPER_SNAKE_CASE** et le nommage doit être si
 
    ```python
    def example_function(example_parameter):
-     """Description détaillée
+     """
+     Description détaillée
+     
      sur....................
      plusieurs..............
      lignes..................
   
      Keyword arguments:
      example_parameter -- description du paramètre
+     example_parameter2 -- description du paramètre2
   
      return
-       description de la valeur retournée
+     description de la valeur retournée
      """
   
      //Du code
      ...
      return valeur
    ```
+   > ATTENTION À L'INDENTATION
 
 ### 4. Classes
 
@@ -100,15 +108,15 @@ Les classes sont écrites en **PascalCase**. Elles doivent être préalablement 
 
 ### 5. Indentations et blocs
 
-On va utiliser les tabulations (_TAB_) pour le développement mais on créera plus tard une action sur github qui va les convertir en espace.
-
+On va utiliser les tabulations (_TAB_) pour le développement mais on créera plus tard une action sur github qui va les convertir en espace car
+l'utilisation des espaces est standard (_Sally croit que oui_)
 
 (Voir le point sur les méthodes pour les exemples)
 
 ### 6. Commentaire et Documentation
 
 - La langue des commentaires et de la documentation est le **Français ou Anglais** (À discuter).
-- Pour le style de la documentation, on utilise les **docstring** selon la **_convention de PEP8_**.
+- Pour le style de la documentation, on utilise les **docstring** selon la **_convention PEP257_**.
 - L’utilité de la documentation c’est la compréhension. N’oublions pas qu’on est une équipe et nous devons tout faire pour faciliter la compréhension.
 
 ## III. Environnement de développement
@@ -117,6 +125,7 @@ On va utiliser les tabulations (_TAB_) pour le développement mais on créera pl
 
 Pas d'IDE en particulier mais ce qui est recommandé c'est:
 - Visual Studio Code
+- (Neo)Vim
 - Pycharm
 - Tout éditeur de texte + terminal
 
@@ -132,7 +141,7 @@ Pas d'IDE en particulier mais ce qui est recommandé c'est:
 
 - `main` : branche principale. Elle contiendra toutes nos releases (Tout le code testé et que l’équipe aura jugé prêt à être remis)
 
-- `develop` : Branche de développement. Elle contiendra tous les commits en rapport avec le développement. On fera nos merges dans dev puis on fera
+- `dev` : Branche de développement. Elle contiendra tous les commits en rapport avec le développement. On fera nos merges dans dev puis on fera
   des tests d'acceptations avant de merge à `master`
   
 - `feature/<numéro_tâche>`: branche sur laquelle la fonctionnalité/la tâche est développée. Une branche par feature
