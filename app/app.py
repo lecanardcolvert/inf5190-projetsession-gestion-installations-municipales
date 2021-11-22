@@ -1,10 +1,9 @@
 from flask import Flask, render_template
-from datetime import datetime
 
 from utils.shared import db
 from routes.router import router
 from config import Config
-from model.arrondissement import Arrondissement
+from utils.update_database import update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
@@ -18,24 +17,20 @@ app.register_blueprint(router)
 
 # Create database if doesn't exist yet
 with app.app_context():
+    print("CREATE DATABASE")
     db.create_all()
-
-    # TODO: replace by auto-insert script
-    date_en_iso = datetime.strptime('31 December 2020', '%d %B %Y').date()
-    arr = Arrondissement(nom='Gotham City', cle='GC', dateMaj=date_en_iso)
-    db.session.add(arr)
-    db.session.commit()
+    update_database()
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template('404.html'), 404
+    return render_template("404.html"), 404
 
 
 @app.errorhandler(405)
 def method_not_allowed(error):
-    return render_template('405.html'), 405
+    return render_template("405.html"), 405
 
 
-if '__main__' == __name__:
+if __name__ == "__main__":
     app.run(debug=True)
