@@ -15,35 +15,19 @@ from model.arrondissement import Arrondissement
 
 
 def update_database():
+    """Insert or update the app's database."""
     try:
+        arrondissements_list = []
         response = fetch_data()
-        data = xmltodict.parse(response["glissade"].data)
-        #    print(data["glissades"]["glissade"][0]["nom"])
-
-        #   print("--------------AQUATIQUE----------------")
-        content = response["aquatic_installation"].data.decode()
-        file = StringIO(content)
-        data = csv.reader(file, delimiter=",")
-        next(data)
-        row1 = next(data)
-        #  print(row1)
-        # for row in data:
-        #    print(row[3])
-        # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
 
         print("--------------PATINOIRE----------------")
-        xml = response["patinoire"].data.decode("utf-8")
-        xml = re.sub("\n", "", xml)
-        xml = re.sub("> +<", "><", xml)
-        xml = re.sub(
-            "</condition><nom_pat>",
-            "</condition></patinoire><patinoire><nom_pat>",
-            xml,
-        )
-        data = xmltodict.parse(xml, dict_constructor=dict)
+        ice_rink_raw_xml = response["patinoire"].data.decode("utf-8")
+        ice_rink_xml = reformat_ince_rink_xml(ice_rink_raw_xml)
+        data = xmltodict.parse(ice_rink_xml, dict_constructor=dict)
+
         arrondissements = data["MAIN"]["arrondissement"]
         arrondissement_id = 0
-        arrondissements_list = []
+
         for arrondissement in arrondissements:
             nom_arr = arrondissement["nom_arr"]
             date_en_iso = datetime.strptime(
@@ -57,12 +41,30 @@ def update_database():
             patinoires = arrondissement["patinoire"]
             insert_patinoires(patinoires, arrondissement_id)
             arrondissement_id += 1
+
+        # TODO: insert playground slide
+        #   print("--------------GLISSADE / playground slide ----------------")
+        data = xmltodict.parse(response["glissade"].data)
+        #    print(data["glissades"]["glissade"][0]["nom"])
+
+        # TODO: insert aquatic_installation
+        #   print("--------------AQUATIQUE----------------")
+        content = response["aquatic_installation"].data.decode()
+        file = StringIO(content)
+        data = csv.reader(file, delimiter=",")
+        next(data)
+        row1 = next(data)
+        #  print(row1)
+        # for row in data:
+        #    print(row[3])
+        # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
+
         db.session.add_all(arrondissements_list)
         db.session.commit()
 
     except Exception:
         print(
-            "Failed to parse xml from response (%s)" % traceback.format_exc()
+            "Failed to parse xml from response\n(%s)" % traceback.format_exc()
         )
 
 
@@ -95,7 +97,38 @@ def fetch_data():
     return response
 
 
+def reformat_ince_rink_xml(xml):
+    """
+    Reformat an ice rink xml in order to ease the parsing of an ice rink.
+
+    This function will embed all the informations of an ice rink
+    inside their own xml markup.
+    The original ice rink xml is misformatted because all the ice rinks and
+    their informations are put side by side and inside a single markup. So when
+    we parse it raw, we can't distinguished the informations of a single ice
+    rink because everything is gathered.
+
+    Keyword arguments:
+    xml -- the ice rink xml string
+
+    return
+    the xml string reformated correctly
+    """
+
+    xml = re.sub("\n", "", xml)
+    xml = re.sub("> +<", "><", xml)
+    xml = re.sub(" +- +", "-", xml)
+    xml = re.sub(
+        "</condition><nom_pat>",
+        "</condition></patinoire><patinoire><nom_pat>",
+        xml,
+    )
+    return xml
+
+
 def insert_patinoires(patinoires_list, arrondissement_id):
+    """Insert patinoire to app's database"""
+
     patinoire_list = []
     for patinoire in patinoires_list:
         nom_pat = patinoire["nom_pat"]
@@ -122,7 +155,9 @@ def insert_patinoires(patinoires_list, arrondissement_id):
 
 
 def parse_integer(field):
-    """Cast field value to integer.
+    """
+    Cast field value to integer.
+
     if field value is None, then we return 0. We consider None as 0
 
     Keyword arguments:
