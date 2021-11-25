@@ -19,10 +19,10 @@ from model.arrondissement import Arrondissement
 def update_database():
     """Insert or update the app's database."""
     try:
-        arrondissements_list = []
+        arrondissements_list = {}
         response = fetch_data()
 
-        print("--------------PATINOIRE----------------")
+        # print("--------------PATINOIRE----------------")
         ice_rink_raw_xml = response["patinoire"].data.decode("utf-8")
         ice_rink_xml = reformat_ince_rink_xml(ice_rink_raw_xml)
         data = xmltodict.parse(ice_rink_xml, dict_constructor=dict)
@@ -32,22 +32,28 @@ def update_database():
 
         for arrondissement in arrondissements:
             nom_arr = arrondissement["nom_arr"]
-            date_en_iso = datetime.strptime(
-                "31 December 2020", "%d %B %Y"
-            ).date()
-            arrondissementA = Arrondissement(
-                id=arrondissement_id, nom=nom_arr, dateMaj=date_en_iso
-            )
-            arrondissements_list.append(arrondissementA)
+            arrondissementA = Arrondissement(id=arrondissement_id, nom=nom_arr)
+            arrondissements_list[nom_arr] = arrondissementA
 
             patinoires = arrondissement["patinoire"]
             insert_patinoires(patinoires, arrondissement_id)
             arrondissement_id += 1
 
         # TODO: insert playground slide
-        #   print("--------------GLISSADE / playground slide ----------------")
+        print("--------------GLISSADE / playground slide ----------------")
         data = xmltodict.parse(response["glissade"].data)
-        #    print(data["glissades"]["glissade"][0]["nom"])
+        playground_slides = data["glissades"]["glissade"]
+
+        for playground_slide in playground_slides:
+            ps_arr = playground_slide["arrondissement"]
+            nom_arr_raw = ps_arr["nom_arr"]
+            nom_arr = trim_space_in_name(nom_arr_raw)
+            cle_arr = ps_arr["cle"]
+            date_maj_arr = ps_arr["date_maj"]
+            date_maj = datetime.strptime(date_maj_arr, "%Y-%m-%d %H:%M:%S")
+            arr = arrondissements_list[nom_arr]
+            arr.set_cle(cle_arr)
+            arr.set_date_maj(date_maj)
 
         # TODO: insert aquatic_installation
         #   print("--------------AQUATIQUE----------------")
@@ -61,8 +67,8 @@ def update_database():
         #    print(row[3])
         # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
 
-        db.session.add_all(arrondissements_list)
-        db.session.commit()
+        # Insert all arrondissements
+        insert_arrondissements(arrondissements_list)
 
     except Exception:
         print(
@@ -119,13 +125,19 @@ def reformat_ince_rink_xml(xml):
 
     xml = re.sub("\n", "", xml)
     xml = re.sub("> +<", "><", xml)
-    xml = re.sub(" +- +", "-", xml)
+    xml = trim_space_in_name(xml)
     xml = re.sub(
         "</condition><nom_pat>",
         "</condition></patinoire><patinoire><nom_pat>",
         xml,
     )
     return xml
+
+
+def trim_space_in_name(name):
+    """Remove spaces in a name"""
+
+    return re.sub(" +- +", "-", name)
 
 
 def insert_patinoires(patinoires_list, arrondissement_id):
@@ -173,3 +185,14 @@ def parse_integer(field):
         return 0
     else:
         return int(field)
+
+
+def insert_arrondissements(arrondissement_list):
+    """Insert arrondissement into app's database"""
+
+    arrondissements = []
+    for key in arrondissement_list:
+        arrondissements.append(arrondissement_list[key])
+
+    db.session.add_all(arrondissements)
+    db.session.commit()
