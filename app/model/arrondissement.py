@@ -17,6 +17,9 @@ class Arrondissement(db.Model):
         self.id = id
         self.nom = nom
 
+    def get_id(self):
+        return self.id
+
     def set_cle(self, cle):
         self.cle = cle
 

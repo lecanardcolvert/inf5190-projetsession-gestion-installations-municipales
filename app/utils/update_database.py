@@ -44,6 +44,7 @@ def update_database():
         data = xmltodict.parse(response["glissade"].data)
         playground_slides = data["glissades"]["glissade"]
 
+        glissade_list = []
         for playground_slide in playground_slides:
             ps_arr = playground_slide["arrondissement"]
             nom_arr_raw = ps_arr["nom_arr"]
@@ -54,6 +55,24 @@ def update_database():
             arr = arrondissements_list[nom_arr]
             arr.set_cle(cle_arr)
             arr.set_date_maj(date_maj)
+            arr_id: int = arr.get_id()
+
+            glissade_name = playground_slide["nom"]
+            glissade_ouvert = parse_integer(playground_slide["ouvert"])
+            glissade_deblaye = parse_integer(playground_slide["deblaye"])
+            glissade_condition = playground_slide["condition"]
+
+            glissade = Glissade(
+                glissade_name,
+                arr_id,
+                glissade_ouvert,
+                glissade_deblaye,
+                glissade_condition,
+            )
+            glissade_list.append(glissade)
+
+        db.session.add_all(glissade_list)
+        db.session.commit()
 
         # TODO: insert aquatic_installation
         #   print("--------------AQUATIQUE----------------")
