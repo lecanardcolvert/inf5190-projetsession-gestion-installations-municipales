@@ -1,5 +1,5 @@
-import flask
-from flask import Blueprint, render_template
+import os
+from flask import Blueprint, current_app, render_template
 
 router = Blueprint("router", __name__)
 
@@ -11,4 +11,5 @@ def home():
 
 @router.route('/doc')
 def doc():
-    return flask.Response(status=501)
+    os.system("raml2html ./api/api.raml > ./static/html/api-doc.html")
+    return current_app.send_static_file('html/api-doc.html')
