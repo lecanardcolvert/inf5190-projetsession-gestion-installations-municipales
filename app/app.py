@@ -17,7 +17,6 @@ app.register_blueprint(router)
 
 # Create database if doesn't exist yet
 with app.app_context():
-    print("CREATE DATABASE")
     db.create_all()
     update_database()
 
