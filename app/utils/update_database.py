@@ -1,4 +1,5 @@
 # Native and installed modules
+import difflib
 import csv
 import re
 import traceback
@@ -31,7 +32,7 @@ def update_database():
         arrondissement_id = 0
 
         for arrondissement in arrondissements:
-            nom_arr = arrondissement["nom_arr"]
+            nom_arr = trim_space_in_name(arrondissement["nom_arr"])
             arrondissementA = Arrondissement(id=arrondissement_id, nom=nom_arr)
             arrondissements_list[nom_arr] = arrondissementA
 
@@ -40,7 +41,7 @@ def update_database():
             arrondissement_id += 1
 
         # TODO: insert playground slide
-        print("--------------GLISSADE / playground slide ----------------")
+        # print("--------------GLISSADE / playground slide ----------------")
         data = xmltodict.parse(response["glissade"].data)
         playground_slides = data["glissades"]["glissade"]
 
@@ -74,17 +75,47 @@ def update_database():
         db.session.add_all(glissade_list)
         db.session.commit()
 
-        # TODO: insert aquatic_installation
+        # insert aquatic_installation
         #   print("--------------AQUATIQUE----------------")
-        content = response["aquatic_installation"].data.decode()
+        content = response["aquatic_installation"].data.decode("utf-8")
         file = StringIO(content)
-        data = csv.reader(file, delimiter=",")
+        data = csv.DictReader(file, delimiter=",")
         next(data)
-        row1 = next(data)
-        #  print(row1)
-        # for row in data:
-        #    print(row[3])
-        # content2 = [line.decode("utf-8") for line in response2.data.readlines()]
+        # for key in arrondissements_list:
+        #     print(f"Nom => {key}")
+        piscine_list = []
+        for row in data:
+            type = row["TYPE"]
+            name = row["NOM"]
+            arr_name = trim_space_in_name(row["ARRONDISSE"])
+            address = row["ADRESSE"]
+            property = row["PROPRIETE"]
+            gestion = row["GESTION"]
+            equipment = row["EQUIPEME"]
+            # print("############")
+            # print(arrondissements_list.keys())
+            arr_id = arrondissement_id
+            if arrondissements_list.keys().__contains__(arr_name):
+                arr = arrondissements_list[arr_name]
+                arr_id: int = arr.get_id()
+            else:
+                arr = Arrondissement(id=arrondissement_id, nom=arr_name)
+                arrondissements_list[arr_name] = arr
+                arrondissement_id += 1
+            # print("############")
+            aquatic_installation = InstallationAquatique(arr_id, name, address)
+            aquatic_installation.set_type(type)
+            aquatic_installation.set_property(property)
+            aquatic_installation.set_gestion(gestion)
+            aquatic_installation.set_equipment(equipment)
+            piscine_list.append(aquatic_installation)
+
+        db.session.add_all(piscine_list)
+        db.session.commit()
+        # content2 = [
+        #     line.decode("utf-8") for line in response2.data.readlines()
+        # ]
+        # print(content2)
 
         # Insert all arrondissements
         insert_arrondissements(arrondissements_list)
@@ -156,7 +187,9 @@ def reformat_ince_rink_xml(xml):
 def trim_space_in_name(name):
     """Remove spaces in a name"""
 
-    return re.sub(" +- +", "-", name)
+    name = re.sub(" +- +", "-", name)
+    name = re.sub("–", "-", name)
+    return name
 
 
 def insert_patinoires(patinoires_list, arrondissement_id):
