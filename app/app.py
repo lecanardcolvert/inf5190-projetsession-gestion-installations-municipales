@@ -1,9 +1,11 @@
 from flask import Flask, render_template
 
 from api.api import api
+
 from config import Config
 from routes.router import router
 from utils.shared import db
+from utils.update_database import update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
@@ -21,8 +23,7 @@ app.register_blueprint(router)
 # Create database if doesn't exist yet
 with app.app_context():
     db.create_all()
-    # À REMETTRE AVANT DE PUSH
-    # update_database()
+    update_database()
 
 
 @app.errorhandler(404)
