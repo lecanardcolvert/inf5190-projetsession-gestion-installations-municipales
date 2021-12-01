@@ -1,11 +1,11 @@
 import atexit
-from zoneinfo import ZoneInfo
+import os
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from utils.shared import db
 from routes.router import router
-from config import Config
+from config import Config, DB_PATH
 from utils.update_database import update_database
 
 # App configurations
@@ -26,10 +26,11 @@ db.init_app(app)
 # Register blueprints
 app.register_blueprint(router)
 
-# Create database if doesn't exist yet
+# Create database if it doesn't exist yet
 with app.app_context():
-    db.create_all()
-    update_database()
+    if not os.path.isfile(DB_PATH):
+        db.create_all()
+        update_database()
 
 
 @app.errorhandler(404)
