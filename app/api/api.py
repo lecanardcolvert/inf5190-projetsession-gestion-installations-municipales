@@ -11,6 +11,15 @@ api = Blueprint("api", __name__, url_prefix="/api")
 
 @api.route('/installations', methods=['GET'])
 def installations():
+    """
+    Returns the list of facilities in the JSON format, with an optional filter by borough.
+
+    Keyword argument:
+    arrondissement -- The exact name of the borough of the facility.
+
+    Return:
+    The list of facilities, in a JSON format.
+    """
     slides = Glissade.query.all()
     slide_model = GlissadeModel(many=True)
     aquatic_installations = InstallationAquatique.query.all()
