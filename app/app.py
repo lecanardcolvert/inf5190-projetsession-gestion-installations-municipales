@@ -1,4 +1,5 @@
 import atexit
+from zoneinfo import ZoneInfo
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -12,12 +13,13 @@ app = Flask(__name__, static_folder="static", static_url_path="/")
 app.config.from_object(Config)
 
 # Auto update config
-update_job = BackgroundScheduler()
+update_job = BackgroundScheduler({"apscheduler.timezone": "America/Toronto"})
 update_job.add_job(
-    lambda: update_database(), "cron", day="*", hour="01", minute="7"
+    lambda: update_database(), "cron", day="*", hour="17", minute="39"
 )
 update_job.start()
 atexit.register(lambda: update_job.shutdown(wait=False))
+
 # Initialization
 db.init_app(app)
 
