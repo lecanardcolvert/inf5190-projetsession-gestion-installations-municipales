@@ -19,6 +19,7 @@ from model.arrondissement import Arrondissement
 def update_database():
     """Insert or update the app's database."""
 
+    print("UPDATING DATABASE")
     try:
         arrondissements_list = {}
         arrondissements_list["last_id"] = 0
