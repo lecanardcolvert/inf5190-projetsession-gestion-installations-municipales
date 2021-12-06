@@ -1,18 +1,23 @@
 from flask import Flask, render_template
 
-from utils.shared import db
-from routes.router import router
+from api.api import api
+
 from config import Config
+from routes.router import router
+from utils.shared import db
 from utils.update_database import update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
 app.config.from_object(Config)
+app.config['JSON_AS_ASCII'] = False
+app.config['JSON_SORT_KEYS'] = False
 
 # Initialization
 db.init_app(app)
 
 # Register blueprints
+app.register_blueprint(api)
 app.register_blueprint(router)
 
 # Create database if doesn't exist yet

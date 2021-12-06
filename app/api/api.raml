@@ -1,11 +1,119 @@
 #%RAML 1.0
-title: Projet de session INF5190 API
+title: API du projet de session INF5190
 version: v1
 baseUri: http://127.0.0.1/api
 mediaType: application/json
+types:
+  Arrondissement:
+    type: object
+    properties:
+      id: number
+      nom: string
+      cle?: string
+      date_maj?: datetime-only
+  Glissade:
+    type: object
+    properties:
+      id: number
+      nom: string
+      arrondissement: Arrondissement
+      ouvert?: boolean
+      deblaye?: boolean
+      condition?: string
+  InstallationAquatique:
+    type: object
+    properties:
+      id: number
+      nom: string
+      arrondissement: Arrondissement
+      type?: string
+      adresse?: string
+      propriete?: string
+      gestion?: string
+      equipement?: string
+  Patinoire:
+    type: object
+    properties:
+      id:
+        type: number
+      nom?: string
+      arrondissement: Arrondissement
+      date_heure?: datetime-only
+      ouvert?: boolean
+      deblaye?: boolean
+      arrose?: boolean
+      resurface?: boolean
+  Installation:
+    type: [Glissade | InstallationAquatique | Patinoire]
 documentation:
   - title: Accueil
     content: |
       Bienvenue dans la documentation de l'API du projet de session
       INF5190. Cette API vous permettra d'obtenir une foule d'infos
       sur les installations de la Ville de Montréal.
+/installations:
+  get:
+    description: Retourne la liste des installations
+    queryParameters:
+      arrondissement:
+        description: Une chaìne de caractères qui représente le nom de l'arrondissement
+        displayName: Arrondissement
+        type: string
+        required: false
+        example: Verdun
+    responses:
+      200:
+        description: La liste des installations a été correctement envoyée.
+        body:
+          type: Installation
+          example: |
+            {
+            	"glissades":[{
+            		"id":3,
+            		"nom":"Glissade, Parc Arthur-Therrien",
+            		"arrondissement":{
+            			"id":16,
+            			"nom":"Verdun",
+            			"cle":"ver",
+            			"date_maj":"2021-11-15T12:18:10"
+            		},
+            		"ouvert":0,
+            		"deblaye":0,
+            		"condition":"N/A"
+            		}
+            	],
+            	"installations_aquatiques":[{
+            		"id":3,
+            		"nom":"Parc Normand Dawe",
+            		"arrondissement":{
+            			"id":16,
+            			"nom":"Verdun",
+            			"cle":"ver",
+            			"date_maj":"2021-11-15T12:18:10"
+            		},
+            		"type":"Jeu d'eau",
+            		"adresse":"1 060, Rue Woodland",
+            		"propriete":"Municipale",
+            		"gestion":"Municipale",
+            		"equipement":""
+            		}
+            	],
+            	"patinoires":[{
+            		"id":251,
+            		"nom":"Glissade, Parc Arthur-Therrien ()",
+            		"arrondissement":{
+            			"id":16,
+            			"nom":"Verdun",
+            			"cle":"ver",
+            			"date_maj":"2021-11-15T12:18:10"
+            		},
+            		"date_heure":"2021-11-15 12:18:10",
+            		"ouvert":0,
+            		"deblaye":0,
+            		"arrose":0,
+            		"resurface":0
+            		}
+            	]
+            }
+      500:
+        description: Une erreur interne s'est produite. L'erreur a été signalée à l'équipe de développement.
