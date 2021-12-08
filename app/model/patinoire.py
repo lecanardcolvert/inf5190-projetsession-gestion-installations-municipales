@@ -9,10 +9,10 @@ from utils.shared import db, ma
 
 
 class Patinoire(db.Model):
-    __tablename__ = 'patinoire'
+    __tablename__ = "patinoire"
 
     id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(128))
+    nom = db.Column(db.String(128), nullable=False)
     arrondissement_id = db.Column(
         db.Integer, ForeignKey("arrondissement.id"), nullable=False
     )
@@ -24,7 +24,14 @@ class Patinoire(db.Model):
     resurface = db.Column(db.Integer)
 
     def __init__(
-        self, nom, arrondissement_id, date_heure, ouvert, deblaye, arrose, resurface
+        self,
+        nom,
+        arrondissement_id,
+        date_heure,
+        ouvert,
+        deblaye,
+        arrose,
+        resurface,
     ):
         self.nom = nom
         self.arrondissement_id = arrondissement_id
@@ -37,7 +44,16 @@ class Patinoire(db.Model):
 
 class PatinoireModel(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id', 'nom', 'arrondissement', 'date_heure', 'ouvert', 'deblaye', 'arrose', 'resurface')
+        fields = (
+            "id",
+            "nom",
+            "arrondissement",
+            "date_heure",
+            "ouvert",
+            "deblaye",
+            "arrose",
+            "resurface",
+        )
         include_relationships = True
         ordered = True
 
