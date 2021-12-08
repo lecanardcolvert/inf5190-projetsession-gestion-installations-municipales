@@ -82,9 +82,6 @@ def subscribe():
                                 request_data['email'],
                                 request_data['boroughs_to_follow'])
 
-        subscriber_model = SubscriberModel()
-        serialized_subscriber = subscriber_model.dump(subscriber)
-
         try:
             db.session.add(subscriber)
             db.session.commit()
