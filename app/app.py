@@ -3,14 +3,17 @@ import os
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 
+from api.api import api
 from utils.shared import db
-from routes.router import router
 from config import Config, DB_PATH
+from routes.router import router
 from utils.update_database import update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
 app.config.from_object(Config)
+app.config["JSON_AS_ASCII"] = False
+app.config["JSON_SORT_KEYS"] = False
 
 # Auto update config
 update_job = BackgroundScheduler({"apscheduler.timezone": "America/Toronto"})
@@ -24,6 +27,7 @@ atexit.register(lambda: update_job.shutdown(wait=False))
 db.init_app(app)
 
 # Register blueprints
+app.register_blueprint(api)
 app.register_blueprint(router)
 
 # Create database if it doesn't exist yet
