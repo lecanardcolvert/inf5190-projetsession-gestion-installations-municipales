@@ -30,7 +30,6 @@ def _validate_json(schema_filename, json_data):
     try:
         validate(instance=json_data, schema=schema)
     except jsonschema.exceptions.ValidationError as err:
-        print(err)
         return False
     return True
 
@@ -85,7 +84,6 @@ def subscribe():
 
         subscriber_model = SubscriberModel()
         serialized_subscriber = subscriber_model.dump(subscriber)
-        print(serialized_subscriber)
 
         try:
             db.session.add(subscriber)
@@ -94,7 +92,6 @@ def subscribe():
             serialized_subscriber = subscriber_model.dump(subscriber)
             return jsonify(serialized_subscriber), 201
         except exc.SQLAlchemyError as err:
-            print(err)
             return jsonify({"error": "Une erreur est survenue lors de l'ajout dans la base de données."}), 500
     else:
         return jsonify({"error": "Les données fournies ne sont pas valides."}), 400
