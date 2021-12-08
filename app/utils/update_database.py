@@ -17,10 +17,41 @@ from model.arrondissement import Arrondissement
 
 
 def update_database():
+    """TODO"""
+
+    data = fetch_data()
+    try:
+        print("CREATING DATABASE")
+        arrondissements_list = {}
+        arrondissements_list["last_id"] = 0
+        response = fetch_data()
+        ice_rink_raw_xml = response["ice_rink"].data.decode("utf-8")
+        insert_ice_rinks(ice_rink_raw_xml, arrondissements_list)
+        playground_slides_raw_xml = response["playground_slide"].data.decode(
+            "utf-8"
+        )
+        insert_playground_slides(
+            playground_slides_raw_xml, arrondissements_list
+        )
+
+        aquatic_installation_data = response[
+            "aquatic_installation"
+        ].data.decode("utf-8")
+        insert_aquatic_installations(
+            aquatic_installation_data, arrondissements_list
+        )
+        insert_arrondissements(arrondissements_list)
+    except Exception:
+        print(
+            "Failed to parse xml from response\n(%s)" % traceback.format_exc()
+        )
+
+
+def create_database():
     """Insert or update the app's database."""
 
-    print("UPDATING DATABASE")
     try:
+        print("CREATING DATABASE")
         arrondissements_list = {}
         arrondissements_list["last_id"] = 0
         response = fetch_data()
@@ -169,6 +200,7 @@ def parse_integer(field):
     The integer obtained from the cast or 0 when field value is None
     """
 
+    field = str(field)
     if field == "None":
         return 0
     else:

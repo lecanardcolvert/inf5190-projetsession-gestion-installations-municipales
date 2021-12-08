@@ -7,7 +7,7 @@ from api.api import api
 from utils.shared import db
 from config import Config, DB_PATH
 from routes.router import router
-from utils.update_database import update_database
+from utils.update_database import create_database, update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
@@ -34,7 +34,7 @@ app.register_blueprint(router)
 with app.app_context():
     if not os.path.isfile(DB_PATH):
         db.create_all()
-        update_database()
+        create_database()
 
 
 @app.errorhandler(404)

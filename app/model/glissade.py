@@ -9,10 +9,10 @@ from utils.shared import db, ma
 
 
 class Glissade(db.Model):
-    __tablename__ = 'glissade'
+    __tablename__ = "glissade"
 
     id = db.Column(db.Integer, primary_key=True)
-    nom = db.Column(db.String(128), unique=True, nullable=False)
+    nom = db.Column(db.String(128), nullable=False)
     arrondissement_id = db.Column(
         db.Integer, ForeignKey("arrondissement.id"), nullable=False
     )
@@ -31,7 +31,14 @@ class Glissade(db.Model):
 
 class GlissadeModel(ma.SQLAlchemyAutoSchema):
     class Meta:
-        fields = ('id', 'nom', 'arrondissement', 'ouvert', 'deblaye', 'condition')
+        fields = (
+            "id",
+            "nom",
+            "arrondissement",
+            "ouvert",
+            "deblaye",
+            "condition",
+        )
         include_relationships = True
         ordered = True
 
