@@ -1,12 +1,38 @@
 # Native and installed modules
+import db
+import flask
+import json
+import jsonschema
 from flask import Blueprint, jsonify, request
+from jsonschema import validate
 
 # Custom modules
+from model.subscriber import Subscriber, SubscriberModel
 from model.glissade import Glissade, GlissadeModel
 from model.installation_aquatique import InstallationAquatique, InstallationAquatiqueModel
 from model.patinoire import Patinoire, PatinoireModel
+from sqlalchemy import exc
+from utils.shared import db
 
 api = Blueprint("api", __name__, url_prefix="/api")
+
+
+def _get_json_schema():
+    with open('user_schema.json', 'r') as file:
+        schema = json.load(file)
+    return schema
+
+
+def _validate_json(schema_filename, json_data):
+    with open(schema_filename, 'r') as file:
+        schema = json.load(file)
+
+    try:
+        validate(instance=json_data, schema=schema)
+    except jsonschema.exceptions.ValidationError as err:
+        print(err)
+        return False
+    return True
 
 
 @api.route('/installations', methods=['GET'])
@@ -45,3 +71,30 @@ def installations():
         'installations_aquatiques': serialized_aquatic_installations,
         'patinoires': serialized_ice_rinks
     })
+
+
+@api.route('/abonnement', methods=['POST'])
+def subscribe():
+    json_schema_path = flask.current_app.root_path + '/schemas/subscribe.json'
+    request_data = request.get_json()
+
+    if _validate_json(json_schema_path, request_data):
+        subscriber = Subscriber(request_data['full_name'],
+                                request_data['email'],
+                                request_data['boroughs_to_follow'])
+
+        subscriber_model = SubscriberModel()
+        serialized_subscriber = subscriber_model.dump(subscriber)
+        print(serialized_subscriber)
+
+        try:
+            db.session.add(subscriber)
+            db.session.commit()
+            subscriber_model = SubscriberModel()
+            serialized_subscriber = subscriber_model.dump(subscriber)
+            return jsonify(serialized_subscriber), 201
+        except exc.SQLAlchemyError as err:
+            print(err)
+            return jsonify({"error": "Une erreur est survenue lors de l'ajout dans la base de données."}), 500
+    else:
+        return jsonify({"error": "Les données fournies ne sont pas valides."}), 400
