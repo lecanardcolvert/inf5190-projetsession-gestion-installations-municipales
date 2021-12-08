@@ -1,13 +1,16 @@
+# Native and installed modules
 import atexit
 import os
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# Custom modules
 from api.api import api
-from utils.shared import db
 from config import Config, DB_PATH
 from routes.router import router
+from utils.shared import db
 from utils.update_database import create_database, update_database
+
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
