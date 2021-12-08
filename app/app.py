@@ -1,11 +1,12 @@
+# Native and installed modules
 from flask import Flask, render_template
 
+# Custom modules
 from api.api import api
-
 from config import Config
 from routes.router import router
-from utils.shared import db
 from utils.update_database import update_database
+from utils.shared import db
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")

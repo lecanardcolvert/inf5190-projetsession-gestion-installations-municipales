@@ -1,0 +1,34 @@
+{
+   "$schema" : "https://json-schema.org/draft/2020-12/schema#",
+   "title" : "New user",
+   "description" : "Validates the data for a new user",
+   "type" : "object",
+   "properties" : {
+      "full_name" : {
+         "description" : "Full name of the user",
+         "type" : "string",
+         "minLength" : 1,
+         "maxLength": 64
+      },
+      "email" : {
+         "description" : "Email of the user",
+         "type" : "string",
+         "minLength" : 1,
+         "maxLength" : 64,
+         "pattern" : "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+      },
+      "boroughs_to_follow" : {
+         "description" : "Ids of boroughs to follow",
+         "type" : "array",
+         "items" : {
+            "type" : "integer"
+         },
+         "maxLength" : 255,
+         "uniqueItems" : true
+      }
+   },
+   "required" : [
+      "full_name",
+      "email"
+   ]
+}
