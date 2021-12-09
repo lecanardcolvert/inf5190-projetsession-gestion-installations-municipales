@@ -7,6 +7,7 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 # Custom modules
+from model.arrondissement import Arrondissement, ArrondissementModel
 from model.subscriber import Subscriber, SubscriberModel
 from model.glissade import Glissade, GlissadeModel
 from model.installation_aquatique import InstallationAquatique, InstallationAquatiqueModel
@@ -70,6 +71,14 @@ def installations():
         'installations_aquatiques': serialized_aquatic_installations,
         'patinoires': serialized_ice_rinks
     })
+
+
+@api.route('/arrondissements', methods=['GET'])
+def boroughs():
+    borough_list = Arrondissement.query.all()
+    borough_model = ArrondissementModel(many=True)
+    serialized_boroughs = borough_model.dump(borough_list)
+    return jsonify(serialized_boroughs)
 
 
 @api.route('/abonnement', methods=['POST'])
