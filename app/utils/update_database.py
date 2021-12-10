@@ -118,9 +118,7 @@ def insert_arrondissement_ice_rinks(ice_rinks_list, arrondissement_id):
                     "resurface": ice_rink_info["resurface"],
                 }
             )
-    # db.session.add_all(ice_rink_list)
-    # TODO: remove next line
-    db.session.add_all([])
+    db.session.add_all(ice_rink_list)
     db.session.commit()
 
 
@@ -152,12 +150,10 @@ def insert_playground_slides(playground_slides_raw_xml, arrondissements_list):
         )
         result = query.first()
         if result is None:
-            print("Update pas possible de la glissade il faut insérer")
             playground_slide = Glissade(playground_slide)
             playground_slide.set_arrondissement_id(arr_id)
             playground_slide_list.append(playground_slide)
         else:
-            print("TODO: On a trouvé mis à jour mais enlève ce print")
             info = create_playground_slide_info(playground_slide)
             query.update(
                 {
@@ -191,7 +187,6 @@ def update_arrondissement(playground_slide, arrondissements_list):
     cle_arr = ps_arr["cle"]
     date_maj_arr = ps_arr["date_maj"]
     date_maj = datetime.strptime(date_maj_arr, "%Y-%m-%d %H:%M:%S")
-
     query = Arrondissement.query.filter(Arrondissement.nom == arr_name)
     result = query.first()
     if result is not None:
@@ -223,55 +218,54 @@ def insert_aquatic_installations(
     next(data)
     piscine_list = []
     for row in data:
-        type = row["TYPE"]
-        name = row["NOM"]
-        arr_name = trim_space_in_name(row["ARRONDISSE"])
-        address = row["ADRESSE"]
-        property = row["PROPRIETE"]
-        gestion = row["GESTION"]
-        equipment = row["EQUIPEME"]
-        arr_id = arrondissements_list["last_id"]
-
-        query = Arrondissement.query.filter(Arrondissement.nom == arr_name)
-        result = query.first()
-        if result is not None:
-            arr_id = result.id
-        else:
-
-            if arrondissements_list.keys().__contains__(arr_name):
-                arr = arrondissements_list[arr_name]
-                arr_id: int = arr.get_id()
-            else:
-                arr = Arrondissement(id=arr_id, nom=arr_name)
-                arrondissements_list[arr_name] = arr
-                arrondissements_list["last_id"] += 1
+        arr_id = get_arrondissement(row, arrondissements_list)
         query = InstallationAquatique.query.filter(
-            InstallationAquatique.nom == name,
+            InstallationAquatique.nom == row["NOM"],
             InstallationAquatique.arrondissement_id == arr_id,
-            InstallationAquatique.type == type,
+            InstallationAquatique.type == row["TYPE"],
         )
         result = query.first()
         if result is not None:
-            print("TODO: On a trouvé mis à jour mais enlève ce print")
-            query.update(
-                {
-                    "adresse": address,
-                    "propriete": property,
-                    "gestion": gestion,
-                    "equipement": equipment,
-                }
-            )
+            update_playground_slide(query, row)
         else:
-            print("Update pas possible de la piscine il faut insérer")
-            aquatic_installation = InstallationAquatique(arr_id, name, address)
-            aquatic_installation.set_type(type)
-            aquatic_installation.set_property(property)
-            aquatic_installation.set_gestion(gestion)
-            aquatic_installation.set_equipment(equipment)
+            aquatic_installation = InstallationAquatique(row)
+            aquatic_installation.set_arrondissement_id(arr_id)
             piscine_list.append(aquatic_installation)
-
     db.session.add_all(piscine_list)
     db.session.commit()
+
+
+def get_arrondissement(row, arrondissements_list):
+    """TODO"""
+
+    arr_name = trim_space_in_name(row["ARRONDISSE"])
+    arr_id = arrondissements_list["last_id"]
+    query = Arrondissement.query.filter(Arrondissement.nom == arr_name)
+    result = query.first()
+    if result is not None:
+        arr_id = result.id
+    else:
+        if arrondissements_list.keys().__contains__(arr_name):
+            arr = arrondissements_list[arr_name]
+            arr_id: int = arr.get_id()
+        else:
+            arr = Arrondissement(id=arr_id, nom=arr_name)
+            arrondissements_list[arr_name] = arr
+            arrondissements_list["last_id"] += 1
+    return arr_id
+
+
+def update_playground_slide(query, row):
+    """TODO"""
+
+    query.update(
+        {
+            "adresse": row["ADRESSE"],
+            "propriete": row["PROPRIETE"],
+            "gestion": row["GESTION"],
+            "equipement": row["EQUIPEME"],
+        }
+    )
 
 
 def insert_arrondissements(arrondissement_list):
