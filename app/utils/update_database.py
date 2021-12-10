@@ -16,7 +16,7 @@ from model.glissade import Glissade
 from model.arrondissement import Arrondissement
 
 
-def create_database():
+def create_or_update_database():
     """Create or update the app's database."""
 
     try:
