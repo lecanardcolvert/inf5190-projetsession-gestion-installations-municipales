@@ -19,31 +19,48 @@ from model.arrondissement import Arrondissement
 def update_database():
     """TODO"""
 
-    # data = fetch_data()
-    # try:
-    #     print("CREATING DATABASE")
-    #     arrondissements_list = {}
-    #     arrondissements_list["last_id"] = 0
-    #     response = fetch_data()
-    #     ice_rink_raw_xml = response["ice_rink"].data.decode("utf-8")
-    #     aquatic_installation_data = response[
-    #         "aquatic_installation"
-    #     ].data.decode("utf-8")
-    #     playground_slides_raw_xml = response["playground_slide"].data.decode(
-    #         "utf-8"
-    #     )
-    #     insert_ice_rinks(ice_rink_raw_xml, arrondissements_list)
-    #     insert_playground_slides(
-    #         playground_slides_raw_xml, arrondissements_list
-    #     )
-    #     insert_aquatic_installations(
-    #         aquatic_installation_data, arrondissements_list
-    #     )
-    #     insert_arrondissements(arrondissements_list)
-    # except Exception:
-    #     print(
-    #         "Failed to parse xml from response\n(%s)" % traceback.format_exc()
-    #     )
+    try:
+        print("UPDATE DATABASE")
+        arrondissements_list = Arrondissement.query.with_entities(
+            Arrondissement.id, Arrondissement.nom
+        ).all()
+        print(Arrondissement.query.count())
+        print(len(arrondissements_list))
+        q = Patinoire.query.filter(
+            Patinoire.nom == "Patinoire de patin libre, Ovila-Légaré (PP)"
+        )
+        result = q.first()
+        if result is not None:
+            Patinoire.query.filter(
+                Patinoire.nom == "Patinoire de patin libre, Ovila-Légaré (PP)"
+            ).update({"nom": "Patinoire de SALLY"})
+        else:
+            print("Update pas possible il faut insérer")
+        db.session.commit()
+
+        print(result)
+        print(type(result))
+        # arrondissements_list["last_id"] = 0
+        # response = fetch_data()
+        # ice_rink_raw_xml = response["ice_rink"].data.decode("utf-8")
+        # aquatic_installation_data = response[
+        #     "aquatic_installation"
+        # ].data.decode("utf-8")
+        # playground_slides_raw_xml = response["playground_slide"].data.decode(
+        #     "utf-8"
+        # )
+        # insert_ice_rinks(ice_rink_raw_xml, arrondissements_list)
+        # insert_playground_slides(
+        #     playground_slides_raw_xml, arrondissements_list
+        # )
+        # insert_aquatic_installations(
+        #     aquatic_installation_data, arrondissements_list
+        # )
+        # insert_arrondissements(arrondissements_list)
+    except Exception:
+        print(
+            "Failed to parse xml from response\n(%s)" % traceback.format_exc()
+        )
 
 
 def create_database():
@@ -52,7 +69,7 @@ def create_database():
     try:
         print("CREATING DATABASE")
         arrondissements_list = {}
-        arrondissements_list["last_id"] = 0
+        arrondissements_list["last_id"] = Arrondissement.query.count()
         response = fetch_data()
         ice_rink_raw_xml = response["ice_rink"].data.decode("utf-8")
         insert_ice_rinks(ice_rink_raw_xml, arrondissements_list)
@@ -114,11 +131,16 @@ def insert_ice_rinks(ice_rink_raw_xml, arrondissements_list):
     for arrondissement in arrondissements_data:
         nom_arr = trim_space_in_name(arrondissement["nom_arr"])
         arr_id = arrondissements_list["last_id"]
-        arrondissementA = Arrondissement(id=arr_id, nom=nom_arr)
-        arrondissements_list[nom_arr] = arrondissementA
         ice_rinks = arrondissement["patinoire"]
+        q = Arrondissement.query.filter(Arrondissement.nom == nom_arr)
+        result = q.first()
+        if result is None:
+            arrondissementA = Arrondissement(id=arr_id, nom=nom_arr)
+            arrondissements_list[nom_arr] = arrondissementA
+            arrondissements_list["last_id"] += 1
+        else:
+            arr_id = result.id
         insert_arrondissement_ice_rinks(ice_rinks, arr_id)
-        arrondissements_list["last_id"] += 1
 
 
 def reformat_ince_rink_xml(xml):

@@ -35,6 +35,7 @@ with app.app_context():
     if not os.path.isfile(DB_PATH):
         db.create_all()
         create_database()
+    update_database()
 
 
 @app.errorhandler(404)
