@@ -108,52 +108,52 @@ documentation:
           type: Installation
           example: |
             {
-            	"glissades":[{
-            		"id":3,
-            		"nom":"Glissade, Parc Arthur-Therrien",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"ouvert":0,
-            		"deblaye":0,
-            		"condition":"N/A"
-            		}
-            	],
-            	"installations_aquatiques":[{
-            		"id":3,
-            		"nom":"Parc Normand Dawe",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"type":"Jeu d'eau",
-            		"adresse":"1 060, Rue Woodland",
-            		"propriete":"Municipale",
-            		"gestion":"Municipale",
-            		"equipement":""
-            		}
-            	],
-            	"patinoires":[{
-            		"id":251,
-            		"nom":"Glissade, Parc Arthur-Therrien ()",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"date_heure":"2021-11-15 12:18:10",
-            		"ouvert":0,
-            		"deblaye":0,
-            		"arrose":0,
-            		"resurface":0
-            		}
-            	]
+              "glissades":[{
+                  "id":3,
+                  "nom":"Glissade, Parc Arthur-Therrien",
+                  "arrondissement":{
+                      "id":16,
+                      "nom":"Verdun",
+                      "cle":"ver",
+                      "date_maj":"2021-11-15T12:18:10"
+                  },
+                  "ouvert":0,
+                  "deblaye":0,
+                  "condition":"N/A"
+                  }
+              ],
+              "installations_aquatiques":[{
+                  "id":3,
+                  "nom":"Parc Normand Dawe",
+                  "arrondissement":{
+                      "id":16,
+                      "nom":"Verdun",
+                      "cle":"ver",
+                      "date_maj":"2021-11-15T12:18:10"
+                  },
+                  "type":"Jeu d'eau",
+                  "adresse":"1 060, Rue Woodland",
+                  "propriete":"Municipale",
+                  "gestion":"Municipale",
+                  "equipement":""
+                  }
+              ],
+              "patinoires":[{
+                  "id":251,
+                  "nom":"Glissade, Parc Arthur-Therrien ()",
+                  "arrondissement":{
+                      "id":16,
+                      "nom":"Verdun",
+                      "cle":"ver",
+                      "date_maj":"2021-11-15T12:18:10"
+                  },
+                  "date_heure":"2021-11-15 12:18:10",
+                  "ouvert":0,
+                  "deblaye":0,
+                  "arrose":0,
+                  "resurface":0
+                  }
+              ]
             }
       500:
         description: Une erreur interne s'est produite. L'erreur a été signalée à l'équipe de développement.
@@ -198,4 +198,60 @@ documentation:
           example: |
             {
               "error": "Une erreur est survenue lors de l'ajout dans la base de données."
+/installations-maj-2021:
+  get:
+    description: Retourne la liste des installations mises à jour en 2021. La liste est triée en ordre alphabétique.
+    responses:
+      200:
+        description: La liste des installations a été correctement envoyée.
+        body:
+          type: Installation
+          example: |
+            {
+              "glissades":[{
+                  "id":3,
+                  "nom":"Glissade, Parc Arthur-Therrien",
+                  "arrondissement":{
+                      "id":16,
+                      "nom":"Verdun",
+                      "cle":"ver",
+                      "date_maj":"2021-11-15T12:18:10"
+                  },
+                  "ouvert":0,
+                  "deblaye":0,
+                  "condition":"N/A"
+                  }
+              ],
+              "installations_aquatiques":[{
+                  "id":3,
+                  "nom":"Parc Normand Dawe",
+                  "arrondissement":{
+                      "id":16,
+                      "nom":"Verdun",
+                      "cle":"ver",
+                      "date_maj":"2021-11-15T12:18:10"
+                  },
+                  "type":"Jeu d'eau",
+                  "adresse":"1 060, Rue Woodland",
+                  "propriete":"Municipale",
+                  "gestion":"Municipale",
+                  "equipement":""
+                  }
+              ],
+              "patinoires":[{
+                  "id":251,
+                  "nom":"Glissade, Parc Arthur-Therrien ()",
+                  "arrondissement":{
+                      "id":16,
+                      "nom":"Verdun",
+                      "cle":"ver",
+                      "date_maj":"2021-11-15T12:18:10"
+                  },
+                  "date_heure":"2021-11-15 12:18:10",
+                  "ouvert":0,
+                  "deblaye":0,
+                  "arrose":0,
+                  "resurface":0
+                  }
+              ]
             }
