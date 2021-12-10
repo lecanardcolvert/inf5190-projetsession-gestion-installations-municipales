@@ -21,8 +21,8 @@ update_job.add_job(
     lambda: update_database(),
     "cron",
     day="*",
-    hour="12",
-    minute="34",
+    hour="0",
+    minute="00",
 )
 update_job.start()
 atexit.register(lambda: update_job.shutdown(wait=False))
@@ -40,12 +40,14 @@ with app.app_context():
         print(" * CREATING DATABASE")
         db.create_all()
         create_or_update_database()
+        print(" * CREATION FINISHED")
 
 
 def update_database():
     with app.app_context():
         print(" * UPDATING DATABASE")
         create_or_update_database()
+        print(" * UPDATE FINISHED")
 
 
 @app.errorhandler(404)

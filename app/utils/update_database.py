@@ -22,21 +22,21 @@ def create_or_update_database():
     """Create or update the app's database."""
 
     try:
-        arrondissements_list = {}
-        arrondissements_list["last_id"] = Arrondissement.query.count()
+        new_arrondissements = {}
+        new_arrondissements["last_id"] = Arrondissement.query.count()
         response = fetch_data()
         ice_rink_raw_xml = response["ice_rink"]
-        insert_ice_rinks(ice_rink_raw_xml, arrondissements_list)
+        insert_arrondissement_ice_rinks(ice_rink_raw_xml, new_arrondissements)
         playground_slides_raw_xml = response["playground_slide"]
         insert_playground_slides(
-            playground_slides_raw_xml, arrondissements_list
+            playground_slides_raw_xml, new_arrondissements
         )
 
         aquatic_installation_data = response["aquatic_installation"]
         insert_aquatic_installations(
-            aquatic_installation_data, arrondissements_list
+            aquatic_installation_data, new_arrondissements
         )
-        insert_arrondissements(arrondissements_list)
+        insert_arrondissements(new_arrondissements)
     except Exception:
         print(
             "Failed to parse xml from response\n(%s)" % traceback.format_exc()
@@ -72,28 +72,28 @@ def fetch_data():
     return response
 
 
-def insert_ice_rinks(ice_rink_raw_xml, arrondissements_list):
+def insert_arrondissement_ice_rinks(ice_rink_raw_xml, new_arrondissements):
     """Insert ice rink from xml to app's database"""
 
     ice_rink_xml = reformat_ince_rink_xml(ice_rink_raw_xml)
     data = xmltodict.parse(ice_rink_xml, dict_constructor=dict)
     arrondissements_data = data["MAIN"]["arrondissement"]
     for arrondissement in arrondissements_data:
-        nom_arr = trim_space_in_name(arrondissement["nom_arr"])
-        arr_id = arrondissements_list["last_id"]
+        arr_name = trim_space_in_name(arrondissement["nom_arr"])
+        arr_id = new_arrondissements["last_id"]
         ice_rinks = arrondissement["patinoire"]
-        query = Arrondissement.query.filter(Arrondissement.nom == nom_arr)
+        query = Arrondissement.query.filter(Arrondissement.nom == arr_name)
         result = query.first()
         if result is None:
-            arrondissementA = Arrondissement(id=arr_id, nom=nom_arr)
-            arrondissements_list[nom_arr] = arrondissementA
-            arrondissements_list["last_id"] += 1
+            arrondissementA = Arrondissement(id=arr_id, nom=arr_name)
+            new_arrondissements[arr_name] = arrondissementA
+            new_arrondissements["last_id"] += 1
         else:
             arr_id = result.id
-        insert_arrondissement_ice_rinks(ice_rinks, arr_id)
+        insert_ice_rinks(ice_rinks, arr_id)
 
 
-def insert_arrondissement_ice_rinks(ice_rinks_list, arrondissement_id):
+def insert_ice_rinks(ice_rinks_list, arrondissement_id):
     """Insert ice rink to app's database"""
 
     ice_rink_list = []
@@ -103,27 +103,33 @@ def insert_arrondissement_ice_rinks(ice_rinks_list, arrondissement_id):
             Patinoire.arrondissement_id == arrondissement_id,
         )
         result = query.first()
-        if result is None:
+        if result is not None:
+            ice_rink_info = create_ice_rink_info(ice_rink)
+            update_ice_rink(query, ice_rink_info)
+        else:
             ice_rink = Patinoire(ice_rink)
             ice_rink.set_arrondissement_id(arrondissement_id)
             ice_rink_list.append(ice_rink)
-        else:
-            ice_rink_info = create_ice_rink_info(ice_rink)
-            query.update(
-                {
-                    "date_heure": ice_rink_info["date_heure"],
-                    "ouvert": ice_rink_info["ouvert"],
-                    "deblaye": ice_rink_info["deblaye"],
-                    "arrose": ice_rink_info["arrose"],
-                    "resurface": ice_rink_info["resurface"],
-                }
-            )
     db.session.add_all(ice_rink_list)
     db.session.commit()
 
 
+def update_ice_rink(query, ice_rink_info):
+    """Apply a query to update an ice rink inside the DB"""
+
+    query.update(
+        {
+            "date_heure": ice_rink_info["date_heure"],
+            "ouvert": ice_rink_info["ouvert"],
+            "deblaye": ice_rink_info["deblaye"],
+            "arrose": ice_rink_info["arrose"],
+            "resurface": ice_rink_info["resurface"],
+        }
+    )
+
+
 def create_ice_rink_info(ice_rink):
-    """TODO"""
+    """Create a simplified ice rink info"""
 
     ice_rink_info = {}
     ice_rink_condition = ice_rink["condition"]
@@ -136,49 +142,31 @@ def create_ice_rink_info(ice_rink):
     return ice_rink_info
 
 
-def insert_playground_slides(playground_slides_raw_xml, arrondissements_list):
+def insert_playground_slides(playground_slides_raw_xml, new_arrondissements):
     """Insert playground slides into app's database"""
 
     playground_slides_raw = xmltodict.parse(playground_slides_raw_xml)
     playground_slides = playground_slides_raw["glissades"]["glissade"]
     playground_slide_list = []
     for playground_slide in playground_slides:
-        arr_id = update_arrondissement(playground_slide, arrondissements_list)
+        arr_id = update_arrondissement(playground_slide, new_arrondissements)
         query = Glissade.query.filter(
             Glissade.nom == playground_slide["nom"],
             Glissade.arrondissement_id == arr_id,
         )
         result = query.first()
-        if result is None:
+        if result is not None:
+            info = create_playground_slide_info(playground_slide)
+            update_playground_slide(query, info)
+        else:
             playground_slide = Glissade(playground_slide)
             playground_slide.set_arrondissement_id(arr_id)
             playground_slide_list.append(playground_slide)
-        else:
-            info = create_playground_slide_info(playground_slide)
-            query.update(
-                {
-                    "ouvert": info["ouvert"],
-                    "deblaye": info["deblaye"],
-                    "condition": info["condition"],
-                }
-            )
     db.session.add_all(playground_slide_list)
     db.session.commit()
 
 
-def create_playground_slide_info(playground_slide):
-    """TODO"""
-
-    playground_slide_info = {}
-    playground_slide_info["ouvert"] = parse_integer(playground_slide["ouvert"])
-    playground_slide_info["deblaye"] = parse_integer(
-        playground_slide["deblaye"]
-    )
-    playground_slide_info["condition"] = playground_slide["condition"]
-    return playground_slide_info
-
-
-def update_arrondissement(playground_slide, arrondissements_list):
+def update_arrondissement(playground_slide, new_arrondissements):
     """Update arrondissement data and return its id"""
 
     ps_arr = playground_slide["arrondissement"]
@@ -194,22 +182,46 @@ def update_arrondissement(playground_slide, arrondissements_list):
         return result.id
     else:
         arr = None
-        if arrondissements_list.keys().__contains__(arr_name):
-            arr = arrondissements_list[arr_name]
+        if new_arrondissements.keys().__contains__(arr_name):
+            arr = new_arrondissements[arr_name]
             arr.set_cle(cle_arr)
             arr.set_date_maj(date_maj)
         else:
-            arr_id = arrondissements_list["last_id"]
+            arr_id = new_arrondissements["last_id"]
             arr = Arrondissement(id=arr_id, nom=arr_name)
             arr.set_cle(cle_arr)
             arr.set_date_maj(date_maj)
-            arrondissements_list[arr_name] = arr
-            arrondissements_list["last_id"] += 1
+            new_arrondissements[arr_name] = arr
+            new_arrondissements["last_id"] += 1
         return arr.get_id()
 
 
+def create_playground_slide_info(playground_slide):
+    """TODO"""
+
+    playground_slide_info = {}
+    playground_slide_info["ouvert"] = parse_integer(playground_slide["ouvert"])
+    playground_slide_info["deblaye"] = parse_integer(
+        playground_slide["deblaye"]
+    )
+    playground_slide_info["condition"] = playground_slide["condition"]
+    return playground_slide_info
+
+
+def update_playground_slide(query, playground_slide_info):
+    """Apply a query to update a playground_slide in the DB"""
+
+    query.update(
+        {
+            "ouvert": playground_slide_info["ouvert"],
+            "deblaye": playground_slide_info["deblaye"],
+            "condition": playground_slide_info["condition"],
+        }
+    )
+
+
 def insert_aquatic_installations(
-    aquatic_installation_data, arrondissements_list
+    aquatic_installation_data, new_arrondissements
 ):
     """Insert aquatic installation into app's database"""
 
@@ -218,7 +230,7 @@ def insert_aquatic_installations(
     next(data)
     piscine_list = []
     for row in data:
-        arr_id = get_arrondissement(row, arrondissements_list)
+        arr_id = get_arrondissement(row, new_arrondissements)
         query = InstallationAquatique.query.filter(
             InstallationAquatique.nom == row["NOM"],
             InstallationAquatique.arrondissement_id == arr_id,
@@ -226,7 +238,7 @@ def insert_aquatic_installations(
         )
         result = query.first()
         if result is not None:
-            update_playground_slide(query, row)
+            update_aquatic_installation(query, row)
         else:
             aquatic_installation = InstallationAquatique(row)
             aquatic_installation.set_arrondissement_id(arr_id)
@@ -235,28 +247,28 @@ def insert_aquatic_installations(
     db.session.commit()
 
 
-def get_arrondissement(row, arrondissements_list):
-    """TODO"""
+def get_arrondissement(row, new_arrondissements):
+    """Get arrondissement id of an arrondissement from aquatic_installation_data csv"""
 
     arr_name = trim_space_in_name(row["ARRONDISSE"])
-    arr_id = arrondissements_list["last_id"]
+    arr_id = new_arrondissements["last_id"]
     query = Arrondissement.query.filter(Arrondissement.nom == arr_name)
     result = query.first()
     if result is not None:
         arr_id = result.id
     else:
-        if arrondissements_list.keys().__contains__(arr_name):
-            arr = arrondissements_list[arr_name]
+        if new_arrondissements.keys().__contains__(arr_name):
+            arr = new_arrondissements[arr_name]
             arr_id: int = arr.get_id()
         else:
             arr = Arrondissement(id=arr_id, nom=arr_name)
-            arrondissements_list[arr_name] = arr
-            arrondissements_list["last_id"] += 1
+            new_arrondissements[arr_name] = arr
+            new_arrondissements["last_id"] += 1
     return arr_id
 
 
-def update_playground_slide(query, row):
-    """TODO"""
+def update_aquatic_installation(query, row):
+    """Apply a query to update a aquatic installation in the DB"""
 
     query.update(
         {
@@ -268,13 +280,13 @@ def update_playground_slide(query, row):
     )
 
 
-def insert_arrondissements(arrondissement_list):
+def insert_arrondissements(new_arrondissements):
     """Insert arrondissement into app's database"""
 
     arrondissements = []
-    for key in arrondissement_list:
+    for key in new_arrondissements:
         if key != "last_id":
-            arrondissements.append(arrondissement_list[key])
+            arrondissements.append(new_arrondissements[key])
 
     db.session.add_all(arrondissements)
     db.session.commit()
