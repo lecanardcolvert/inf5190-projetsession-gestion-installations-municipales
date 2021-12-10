@@ -37,7 +37,7 @@ app.register_blueprint(router)
 with app.app_context():
     if not os.path.isfile(DB_PATH):
         db.create_all()
-        # create_database()
+        create_database()
 
 
 @app.route('/abonnement', methods=['GET'])
