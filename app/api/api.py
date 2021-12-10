@@ -3,10 +3,12 @@ import db
 import flask
 import json
 import jsonschema
-from flask import Blueprint, jsonify, request
+from dicttoxml import dicttoxml
+from flask import Blueprint, jsonify, request, Response
 from jsonschema import validate
 from sqlalchemy import exc
 from sqlalchemy.orm import contains_eager
+from xml.dom.minidom import parseString
 
 # Custom modules
 from model.arrondissement import Arrondissement, ArrondissementModel
@@ -87,13 +89,14 @@ def installations():
     })
 
 
-@api.route('/installations-maj-2021', methods=['GET'])
-def facilities_updated_2021():
+def _facilities_updated_2021():
     """
-    Returns the list of facilities updated in 2021 in the JSON format.
+    Returns the list of facilities updated in 2021, in ascending sorting order, for later usage by an API.
 
     Return:
-    The list of facilities updated in 2021 in JSON format.
+        The aquatic installations updated in 2021, in ascending order (name)
+        The ice rinks updated in 2021, in ascending order (name)
+        The slides updated in 2021, in ascending order (name)
     """
     year = '2021'
 
@@ -120,11 +123,24 @@ def facilities_updated_2021():
     serialized_aquatic_installations = aquatic_installation_model.dump(aquatic_installations)
     serialized_ice_rinks = ice_rink_model.dump(skating_rinks)
     serialized_slides = slide_model.dump(slides)
+    return serialized_aquatic_installations, serialized_ice_rinks, serialized_slides
+
+
+@api.route('/installations-maj-2021', methods=['GET'])
+def facilities_updated_2021():
+    """
+    Returns the list of facilities updated in 2021 in the JSON format.
+
+    Return:
+    The list of facilities updated in 2021 in JSON format.
+    """
+
+    aquatic_installations, ice_rinks, slides = _facilities_updated_2021()
 
     return jsonify({
-        'glissades': serialized_slides,
-        'installations_aquatiques': serialized_aquatic_installations,
-        'patinoires': serialized_ice_rinks
+        'glissades': slides,
+        'installations_aquatiques': aquatic_installations,
+        'patinoires': ice_rinks
     })
 
 
@@ -156,3 +172,26 @@ def subscribe():
             return jsonify({"error": "Une erreur est survenue lors de l'ajout dans la base de données."}), 500
     else:
         return jsonify({"error": "Les données fournies ne sont pas valides."}), 400
+
+
+@api.route('/installations-maj-2021.xml', methods=['GET'])
+def facilities_updated_2021_xml():
+    """
+    Returns the list of facilities updated in 2021 in the XML format.
+
+    Return:
+    The list of facilities updated in 2021 in XML format.
+    """
+    aquatic_installations, ice_rinks, slides = _facilities_updated_2021()
+    xml_data = ['<?xml version="1.0" encoding="utf-8"?><installations><glissades>',
+                dicttoxml(slides, root=False, attr_type=False).decode("utf-8"),
+                '</glissades><installations_aquatiques>',
+                dicttoxml(aquatic_installations, root=False, attr_type=False).decode("utf-8"),
+                '</installations_aquatiques><patinoires>',
+                dicttoxml(ice_rinks, root=False, attr_type=False).decode("utf-8"),
+                '</patinoires></installations>']
+    joined_xml_data = ''.join(xml_data)
+    parsed_xml_data = parseString(joined_xml_data)
+    pretty_xml_data = parsed_xml_data.toprettyxml()
+
+    return Response(pretty_xml_data, mimetype='application/xml')
