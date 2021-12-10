@@ -248,7 +248,7 @@ def insert_aquatic_installations(
 
 
 def get_arrondissement(row, new_arrondissements):
-    """Get arrondissement id of an arrondissement from aquatic_installation_data csv"""
+    """Get id of an arrondissement from aquatic_installation_data csv"""
 
     arr_name = trim_space_in_name(row["ARRONDISSE"])
     arr_id = new_arrondissements["last_id"]
