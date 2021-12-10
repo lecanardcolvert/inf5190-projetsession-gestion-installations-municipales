@@ -146,32 +146,40 @@ def insert_playground_slides(playground_slides_raw_xml, arrondissements_list):
     playground_slide_list = []
     for playground_slide in playground_slides:
         arr_id = update_arrondissement(playground_slide, arrondissements_list)
-        name = playground_slide["nom"]
-        ouvert = parse_integer(playground_slide["ouvert"])
-        deblaye = parse_integer(playground_slide["deblaye"])
-        condition = playground_slide["condition"]
         query = Glissade.query.filter(
-            Glissade.nom == name,
+            Glissade.nom == playground_slide["nom"],
             Glissade.arrondissement_id == arr_id,
         )
         result = query.first()
         if result is None:
             print("Update pas possible de la glissade il faut insérer")
-            playground_slide = Glissade(
-                name,
-                arr_id,
-                ouvert,
-                deblaye,
-                condition,
-            )
+            playground_slide = Glissade(playground_slide)
+            playground_slide.set_arrondissement_id(arr_id)
             playground_slide_list.append(playground_slide)
         else:
             print("TODO: On a trouvé mis à jour mais enlève ce print")
+            info = create_playground_slide_info(playground_slide)
             query.update(
-                {"ouvert": ouvert, "deblaye": deblaye, "condition": condition}
+                {
+                    "ouvert": info["ouvert"],
+                    "deblaye": info["deblaye"],
+                    "condition": info["condition"],
+                }
             )
     db.session.add_all(playground_slide_list)
     db.session.commit()
+
+
+def create_playground_slide_info(playground_slide):
+    """TODO"""
+
+    playground_slide_info = {}
+    playground_slide_info["ouvert"] = parse_integer(playground_slide["ouvert"])
+    playground_slide_info["deblaye"] = parse_integer(
+        playground_slide["deblaye"]
+    )
+    playground_slide_info["condition"] = playground_slide["condition"]
+    return playground_slide_info
 
 
 def update_arrondissement(playground_slide, arrondissements_list):
