@@ -16,58 +16,10 @@ from model.glissade import Glissade
 from model.arrondissement import Arrondissement
 
 
-def update_database():
-    """TODO"""
-
-    try:
-        print("UPDATE DATABASE")
-        arrondissements_list = Arrondissement.query.with_entities(
-            Arrondissement.id, Arrondissement.nom
-        ).all()
-        print(Arrondissement.query.count())
-        print(len(arrondissements_list))
-        q = Patinoire.query.filter(
-            Patinoire.nom == "Patinoire de patin libre, Ovila-Légaré (PP)"
-        )
-        result = q.first()
-        if result is not None:
-            Patinoire.query.filter(
-                Patinoire.nom == "Patinoire de patin libre, Ovila-Légaré (PP)"
-            ).update({"nom": "Patinoire de SALLY"})
-        else:
-            print("Update pas possible il faut insérer")
-        db.session.commit()
-
-        print(result)
-        print(type(result))
-        # arrondissements_list["last_id"] = 0
-        # response = fetch_data()
-        # ice_rink_raw_xml = response["ice_rink"].data.decode("utf-8")
-        # aquatic_installation_data = response[
-        #     "aquatic_installation"
-        # ].data.decode("utf-8")
-        # playground_slides_raw_xml = response["playground_slide"].data.decode(
-        #     "utf-8"
-        # )
-        # insert_ice_rinks(ice_rink_raw_xml, arrondissements_list)
-        # insert_playground_slides(
-        #     playground_slides_raw_xml, arrondissements_list
-        # )
-        # insert_aquatic_installations(
-        #     aquatic_installation_data, arrondissements_list
-        # )
-        # insert_arrondissements(arrondissements_list)
-    except Exception:
-        print(
-            "Failed to parse xml from response\n(%s)" % traceback.format_exc()
-        )
-
-
 def create_database():
-    """Insert or update the app's database."""
+    """Create or update the app's database."""
 
     try:
-        print("CREATING DATABASE")
         arrondissements_list = {}
         arrondissements_list["last_id"] = Arrondissement.query.count()
         response = fetch_data()
@@ -132,6 +84,7 @@ def insert_ice_rinks(ice_rink_raw_xml, arrondissements_list):
         nom_arr = trim_space_in_name(arrondissement["nom_arr"])
         arr_id = arrondissements_list["last_id"]
         ice_rinks = arrondissement["patinoire"]
+        # TODO: rename q and use it in update
         q = Arrondissement.query.filter(Arrondissement.nom == nom_arr)
         result = q.first()
         if result is None:
@@ -194,17 +147,40 @@ def insert_arrondissement_ice_rinks(ice_rinks_list, arrondissement_id):
         arrose = parse_integer(last_condition["arrose"])
         resurface = parse_integer(last_condition["resurface"])
 
-        ice_rink = Patinoire(
-            nom_pat,
-            arrondissement_id,
-            date_heure,
-            ouvert,
-            deblaye,
-            arrose,
-            resurface,
+        # TODO: rename q and use it in update
+        q = Patinoire.query.filter(
+            Patinoire.nom == nom_pat,
+            Patinoire.arrondissement_id == arrondissement_id,
         )
-        ice_rink_list.append(ice_rink)
-    db.session.add_all(ice_rink_list)
+        result = q.first()
+        if result is None:
+            print("Update pas possible de la patinoire il faut insérer")
+            ice_rink = Patinoire(
+                nom_pat,
+                arrondissement_id,
+                date_heure,
+                ouvert,
+                deblaye,
+                arrose,
+                resurface,
+            )
+            ice_rink_list.append(ice_rink)
+        else:
+            print("TODO: On a trouvé mis à jour mais enlève ce print")
+            Patinoire.query.filter(
+                Patinoire.nom == nom_pat,
+                Patinoire.arrondissement_id == arrondissement_id,
+            ).update(
+                {
+                    "date_heure": date_heure,
+                    "ouvert": ouvert,
+                    "deblaye": deblaye,
+                    "arrose": arrose,
+                    "resurface": resurface,
+                }
+            )
+    # db.session.add_all(ice_rink_list)
+    db.session.add_all([])
     db.session.commit()
 
 
@@ -240,14 +216,31 @@ def insert_playground_slides(playground_slides_raw_xml, arrondissements_list):
         ouvert = parse_integer(playground_slide["ouvert"])
         deblaye = parse_integer(playground_slide["deblaye"])
         condition = playground_slide["condition"]
-        playground_slide = Glissade(
-            name,
-            arr_id,
-            ouvert,
-            deblaye,
-            condition,
+
+        # TODO: rename q and use it in update
+        q = Glissade.query.filter(
+            Glissade.nom == name,
+            Glissade.arrondissement_id == arr_id,
         )
-        playground_slide_list.append(playground_slide)
+        result = q.first()
+        if result is None:
+            print("Update pas possible de la glissade il faut insérer")
+            playground_slide = Glissade(
+                name,
+                arr_id,
+                ouvert,
+                deblaye,
+                condition,
+            )
+            playground_slide_list.append(playground_slide)
+        else:
+            print("TODO: On a trouvé mis à jour mais enlève ce print")
+            Glissade.query.filter(
+                Glissade.nom == name,
+                Glissade.arrondissement_id == arr_id,
+            ).update(
+                {"ouvert": ouvert, "deblaye": deblaye, "condition": condition}
+            )
     db.session.add_all(playground_slide_list)
     db.session.commit()
 
@@ -261,10 +254,21 @@ def update_arrondissement(playground_slide, arrondissements_list):
     cle_arr = ps_arr["cle"]
     date_maj_arr = ps_arr["date_maj"]
     date_maj = datetime.strptime(date_maj_arr, "%Y-%m-%d %H:%M:%S")
-    arr = arrondissements_list[nom_arr]
-    arr.set_cle(cle_arr)
-    arr.set_date_maj(date_maj)
-    return arr.get_id()
+
+    # TODO: rename q and use it in update
+    q = Arrondissement.query.filter(Arrondissement.nom == nom_arr)
+    result = q.first()
+    if result is not None:
+        Arrondissement.query.filter(Arrondissement.nom == nom_arr).update(
+            {"cle": cle_arr, "date_maj": date_maj}
+        )
+        return result.id
+    else:
+        # TODO: insert new arrondissement if it is not already in arrondissements_list
+        arr = arrondissements_list[nom_arr]
+        arr.set_cle(cle_arr)
+        arr.set_date_maj(date_maj)
+        return arr.get_id()
 
 
 def insert_aquatic_installations(
@@ -285,19 +289,51 @@ def insert_aquatic_installations(
         gestion = row["GESTION"]
         equipment = row["EQUIPEME"]
         arr_id = arrondissements_list["last_id"]
-        if arrondissements_list.keys().__contains__(arr_name):
-            arr = arrondissements_list[arr_name]
-            arr_id: int = arr.get_id()
+
+        q = Arrondissement.query.filter(Arrondissement.nom == arr_name)
+        result = q.first()
+        if result is not None:
+            arr_id = result.id
         else:
-            arr = Arrondissement(id=arr_id, nom=arr_name)
-            arrondissements_list[arr_name] = arr
-            arrondissements_list["last_id"] += 1
-        aquatic_installation = InstallationAquatique(arr_id, name, address)
-        aquatic_installation.set_type(type)
-        aquatic_installation.set_property(property)
-        aquatic_installation.set_gestion(gestion)
-        aquatic_installation.set_equipment(equipment)
-        piscine_list.append(aquatic_installation)
+            # TODO: insert new arrondissement if it is not already in arrondissements_list
+
+            if arrondissements_list.keys().__contains__(arr_name):
+                arr = arrondissements_list[arr_name]
+                arr_id: int = arr.get_id()
+            else:
+                arr = Arrondissement(id=arr_id, nom=arr_name)
+                arrondissements_list[arr_name] = arr
+                arrondissements_list["last_id"] += 1
+
+        # TODO: rename q and use it in update
+        q = InstallationAquatique.query.filter(
+            InstallationAquatique.nom == name,
+            InstallationAquatique.arrondissement_id == arr_id,
+            InstallationAquatique.type == type,
+        )
+        result = q.first()
+        if result is not None:
+            print("TODO: On a trouvé mis à jour mais enlève ce print")
+            InstallationAquatique.query.filter(
+                InstallationAquatique.nom == name,
+                InstallationAquatique.arrondissement_id == arr_id,
+                InstallationAquatique.type == type,
+            ).update(
+                {
+                    "adresse": address,
+                    "propriete": property,
+                    "gestion": gestion,
+                    "equipement": equipment,
+                }
+            )
+        else:
+            print("Update pas possible de la piscine il faut insérer")
+            aquatic_installation = InstallationAquatique(arr_id, name, address)
+            aquatic_installation.set_type(type)
+            aquatic_installation.set_property(property)
+            aquatic_installation.set_gestion(gestion)
+            aquatic_installation.set_equipment(equipment)
+            piscine_list.append(aquatic_installation)
 
     db.session.add_all(piscine_list)
     db.session.commit()
