@@ -1,1 +1,1 @@
-worker: flask run --host=0.0.0.0 --port=5000
+web: gunicorn --chdir ./app -b 0.0.0.0:5000 app:app
