@@ -221,7 +221,7 @@ pre code {
 </code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne s&#39;est produite. L&#39;erreur a été signalée à l&#39;équipe de développement.</p></div></div></div></div></div></div></div></div></div></div><div class="panel panel-default"><div class="panel-heading"><h3 id="abonnement" class="panel-title">/abonnement</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_abonnement"><span class="parent"></span>/abonnement</a> <span class="methods"><a href="#abonnement_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_abonnement" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#abonnement_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>S&#39;abonner aux alertes par courriel</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="abonnement_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent"></span>/abonnement</h4></div><div class="modal-body"><div class="alert alert-info"><p>S&#39;abonner aux alertes par courriel</p></div><ul class="nav nav-tabs"><li class="active"><a href="#abonnement_post_request" data-toggle="tab">Request</a></li><li><a href="#abonnement_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="abonnement_post_request"><h3>Query Parameters</h3><ul><li><strong>subscriber</strong>: <em><span class="required">required</span>(json)</em><p>Les informations de la personne</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "full_name":"Alex",
   "email":"courriel@hebergeur.com",
-  "boroughs_to_follow":"[1,2,3]"
+  "boroughs_to_follow":[1,2,3]
 }
 </code></pre></div></li></ul></div><div class="tab-pane" id="abonnement_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><p>La personne s&#39;est abonné avec succès.</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: json</p><p><strong>Content</strong>:</p><pre><code>{
  "$schema" : "https://json-schema.org/draft/2020-12/schema#",
@@ -260,7 +260,7 @@ pre code {
 </code></pre><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "full_name":"Alex",
   "email":"courriel@hebergeur.com",
-  "boroughs_to_follow":"[1,2,3]"
+  "boroughs_to_follow":[1,2,3]
 }
 </code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>status</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
   "error": "Les données fournies ne sont pas valides."
