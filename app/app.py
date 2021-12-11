@@ -1,8 +1,80 @@
-from flask import Flask
-from routes.router import router
+# Native and installed modules
+import atexit
+import os
+from flask import Flask, render_template
+from apscheduler.schedulers.background import BackgroundScheduler
 
+# Custom modules
+from api.api import api
+from config import Config, DB_PATH
+from model.arrondissement import Arrondissement, ArrondissementModel
+from routes.router import router
+from utils.shared import db
+from utils.update_database import create_or_update_database
+
+# App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
+app.config.from_object(Config)
+app.config["JSON_AS_ASCII"] = False
+app.config["JSON_SORT_KEYS"] = False
+
+# Auto update config
+update_job = BackgroundScheduler({"apscheduler.timezone": "America/Toronto"})
+update_job.add_job(
+    lambda: update_database(),
+    "cron",
+    day="*",
+    hour="0",
+    minute="00",
+)
+update_job.start()
+atexit.register(lambda: update_job.shutdown(wait=False))
+
+# Initialization
+db.init_app(app)
+
+# Register blueprints
+app.register_blueprint(api)
 app.register_blueprint(router)
 
-if '__main__' == __name__:
-    app.run()
+# Create database if it doesn't exist yet
+with app.app_context():
+    if not os.path.isfile(DB_PATH):
+        print(" * CREATING DATABASE")
+        db.create_all()
+        create_or_update_database()
+        print(" * CREATION FINISHED")
+
+
+@app.route("/abonnement", methods=["GET"])
+def subscribe():
+    borough_list = Arrondissement.query.all()
+    borough_model = ArrondissementModel(many=True)
+    serialized_boroughs = borough_model.dump(borough_list)
+    return render_template("subscribe.html", boroughs=serialized_boroughs)
+
+
+@app.route("/abonnement-merci", methods=["GET"])
+def subscribe_success():
+    return render_template("subscribe-success.html")
+
+
+def update_database():
+    with app.app_context():
+        print(" * UPDATING DATABASE")
+        create_or_update_database()
+        print(" * UPDATE FINISHED")
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template("404.html"), 404
+
+
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return render_template("405.html"), 405
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

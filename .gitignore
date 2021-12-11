@@ -16,3 +16,5 @@ venv/
 
 # Other
 *.zip
+*.db
+*.log

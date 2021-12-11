@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Recherche d'installations{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <form class="needs-validation" action="{{ url_for('api.installations') }}" method="get" id="search-installations-form">
+        <div class="mb-3">
+            <label class="form-label" for="borough-name">Nom de l'arrondissement</label>
+            <input class="form-control" type="text" id="borough-name" name="arrondissement" aria-describedby="title-help">
+        </div>
+
+        <input class="btn btn-primary" type="submit" value="Rechercher" id="search-installations-submit">
+    </form>
+</div>
+
+<h1>Résultats de la recherche</h1>
+
+<ul class="nav nav-tabs pt-2 mb-4" id="tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+       <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#slides" type="button" role="tab" aria-controls="slides" aria-selected="true">Glissades</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#aquatic_installations" type="button" role="tab" aria-controls="aquatic_installations" aria-selected="false">Installations aquatiques</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#ice_rinks" type="button" role="tab" aria-controls="ice_rinks" aria-selected="false">Patinoires</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="slides" role="tabpanel" aria-labelledby="slides-tab">
+        <table class="table table-striped" id="slides-table" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Arrondissement</th>
+                    <th>Ouvert</th>
+                    <th>Déblayé</th>
+                    <th>Condition</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="aquatic_installations" role="tabpanel" aria-labelledby="aquatic_installations-tab">
+        <table class="table table-striped" id="aquatic_installations-table" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Arrondissement</th>
+                    <th>Type</th>
+                    <th>Adresse</th>
+                    <th>Propriété</th>
+                    <th>Gestion</th>
+                    <th>Équipement</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="ice_rinks" role="tabpanel" aria-labelledby="ice_rinks-tab">
+        <table class="table table-striped" id="ice_rinks-table" style="width:100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Arrondissement</th>
+                    <th>Dernière màj</th>
+                    <th>Ouvert</th>
+                    <th>Déblayé</th>
+                    <th>Arrosée</th>
+                    <th>Resurfacée</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
