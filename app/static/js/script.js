@@ -1,16 +1,57 @@
 $(document).ready(function() {
-    $("#search-installations-form").submit(function(event) {
-        var form = $(this);
-        var url = form.attr("action");
 
-        event.preventDefault();
-        $("#search-installations-submit").prop('disabled', true);
-        validate_form(url, 'get', form.serialize());
-        $("#search-installations-submit").prop('disabled', false);
-    });
+
+
+// Subscribe form
+$("#subscribe-form").submit(function(event) {
+    var form = $(this);
+    var url = form.attr("action");
+    var method = form.attr("method");
+
+    event.preventDefault();
+    $("#subscribe-submit").prop('disabled', true);
+
+    var form_json = form.serializeJSON();
+    var form_json_string = JSON.stringify(form_json);
+
+    var xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.responseType = 'json';
+    xhr.setRequestHeader('Content-type', 'application/json');
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 201) {
+                window.location.href ='abonnement-merci';
+            } else {
+                console.log(xhr.response);
+                $("#subscribe-error").show();
+                console.log(xhr.response.error);
+                $("#subscribe-error").text(xhr.response.error);
+            }
+        }
+    };
+
+    console.log(form_json_string);
+    xhr.send(form_json_string);
+
+    $("#subscribe-submit").prop('disabled', false);
 });
 
-async function validate_form(url, type, data) {
+
+
+// Search form
+$("#search-installations-form").submit(function(event) {
+    var form = $(this);
+    var url = form.attr("action");
+
+    event.preventDefault();
+    $("#search-installations-submit").prop('disabled', true);
+    validate_search_form(url, 'get', form.serialize());
+    $("#search-installations-submit").prop('disabled', false);
+});
+
+async function validate_search_form(url, type, data) {
     let result;
 
     try {
@@ -106,3 +147,7 @@ async function validate_form(url, type, data) {
         console.error(error);
     }
 }
+
+
+
+});

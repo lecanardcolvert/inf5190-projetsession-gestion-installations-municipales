@@ -6,6 +6,7 @@ from marshmallow_sqlalchemy import fields
 from model.arrondissement import ArrondissementModel
 from sqlalchemy.orm import relationship
 from utils.shared import db, ma
+from utils.utils import parse_integer
 
 
 class Glissade(db.Model):
@@ -21,12 +22,17 @@ class Glissade(db.Model):
     deblaye = db.Column(db.Integer)
     condition = db.Column(db.String(32))
 
-    def __init__(self, nom, arrondissement_id, ouvert, deblaye, condition):
-        self.nom = nom
+    def __init__(self, playground_slide_info):
+        self.nom = playground_slide_info["nom"]
+        self.ouvert = parse_integer(playground_slide_info["ouvert"])
+        self.deblaye = parse_integer(playground_slide_info["deblaye"])
+        self.condition = playground_slide_info["condition"]
+
+    def set_arrondissement_id(self, arrondissement_id):
         self.arrondissement_id = arrondissement_id
-        self.ouvert = ouvert
-        self.deblaye = deblaye
-        self.condition = condition
+
+    def get_name(self):
+        return self.nom
 
 
 class GlissadeModel(ma.SQLAlchemyAutoSchema):

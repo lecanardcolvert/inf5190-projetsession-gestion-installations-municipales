@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}S'abonner aux mises à jour{% endblock %}
+
+{% block content %}
+
+<p>Inscrivez-vous maintenant et recevez des alertes par courriel.</p>
+
+<div class="mb-4">
+    <form class="needs-validation" action="{{ url_for('api.subscribe') }}" method="post" id="subscribe-form">
+
+        <div class="mb-3">
+            <label class="form-label" for="full-name">Nom complet</label>
+            <input class="form-control" type="text" id="full-name" name="full_name" aria-describedby="title-help">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="email">Adresse courriel</label>
+            <input class="form-control" type="email" id="email" name="email" aria-describedby="title-help" placeholder="votrenom@example.com">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="boroughs-to-follow">Arrondissements à surveiller</label>
+            <select class="form-select" id="boroughs-to-follow" name="boroughs_to_follow[]:number" multiple aria-label="multiple select">
+                {% for borough in boroughs %}
+                <option value="{{ borough.id }}">{{ borough.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <input class="btn btn-primary" type="submit" value="S'abonner" id="subscribe-submit">
+    </form>
+</div>
+
+<div class="alert alert-danger" role="alert" style="display:none;" id="subscribe-error"></div>
+
+{% endblock %}
