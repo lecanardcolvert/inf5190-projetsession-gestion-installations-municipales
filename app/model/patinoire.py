@@ -37,6 +37,9 @@ class Patinoire(db.Model):
     def set_arrondissement_id(self, arrondissement_id):
         self.arrondissement_id = arrondissement_id
 
+    def get_name(self):
+        return self.nom
+
 
 class PatinoireModel(ma.SQLAlchemyAutoSchema):
     class Meta:

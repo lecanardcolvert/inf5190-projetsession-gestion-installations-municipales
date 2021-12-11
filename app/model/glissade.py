@@ -31,6 +31,9 @@ class Glissade(db.Model):
     def set_arrondissement_id(self, arrondissement_id):
         self.arrondissement_id = arrondissement_id
 
+    def get_name(self):
+        return self.nom
+
 
 class GlissadeModel(ma.SQLAlchemyAutoSchema):
     class Meta:

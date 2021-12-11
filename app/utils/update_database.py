@@ -11,11 +11,14 @@ from utils.shared import db
 from utils.utils import parse_integer
 from utils.utils import reformat_ince_rink_xml
 from utils.utils import trim_space_in_name
+from utils.sendMail import sendMail
 from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
 from model.installation_aquatique import InstallationAquatique
 from model.glissade import Glissade
 from model.arrondissement import Arrondissement
+
+new_installations = []
 
 
 def create_or_update_database():
@@ -37,6 +40,7 @@ def create_or_update_database():
             aquatic_installation_data, new_arrondissements
         )
         insert_arrondissements(new_arrondissements)
+        sendMail(new_installations)
     except Exception:
         print(
             "Failed to parse xml from response\n(%s)" % traceback.format_exc()
@@ -110,6 +114,7 @@ def insert_ice_rinks(ice_rinks_list, arrondissement_id):
             ice_rink = Patinoire(ice_rink)
             ice_rink.set_arrondissement_id(arrondissement_id)
             ice_rink_list.append(ice_rink)
+            new_installations.append(ice_rink.get_name())
     db.session.add_all(ice_rink_list)
     db.session.commit()
 
@@ -162,6 +167,7 @@ def insert_playground_slides(playground_slides_raw_xml, new_arrondissements):
             playground_slide = Glissade(playground_slide)
             playground_slide.set_arrondissement_id(arr_id)
             playground_slide_list.append(playground_slide)
+            new_installations.append(playground_slide.get_name())
     db.session.add_all(playground_slide_list)
     db.session.commit()
 
@@ -243,6 +249,7 @@ def insert_aquatic_installations(
             aquatic_installation = InstallationAquatique(row)
             aquatic_installation.set_arrondissement_id(arr_id)
             piscine_list.append(aquatic_installation)
+            new_installations.append(aquatic_installation.get_name())
     db.session.add_all(piscine_list)
     db.session.commit()
 
