@@ -17,7 +17,7 @@ TWITTER_ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_ACCESS_TOKEN_SECRET")
 
 # Mail config
 mail = config["mail"]
-DEST = mail["destination"]
+RECIPIENT = mail["recipient"]
 SUBJECT = mail["subject"]
 USER_MAIL = os.environ.get("INF5190_SERVER_MAIL")
 MAIL_PASSWORD = os.environ.get("INF5190_MAIL_SERVER_PASSWORD")
