@@ -7,11 +7,9 @@ from flask import Blueprint, jsonify, request
 from jsonschema import validate
 
 # Custom modules
+from model.arrondissement import Arrondissement, ArrondissementModel
 from model.subscriber import Subscriber, SubscriberModel
 from sqlalchemy.orm import contains_eager
-
-# Custom modules
-from model.arrondissement import Arrondissement
 from model.glissade import Glissade, GlissadeModel
 from model.installation_aquatique import (
     InstallationAquatique,
@@ -22,6 +20,20 @@ from sqlalchemy import exc
 from utils.shared import db
 
 api = Blueprint("api", __name__, url_prefix="/api")
+
+
+def _get_installations():
+    """
+    Returns the list of facilities for later usage by an API.
+    Return:
+        The aquatic installations
+        The ice rinks
+        The slides
+    """
+    aquatic_installations = InstallationAquatique.query.all()
+    ice_rinks = Patinoire.query.all()
+    slides = Glissade.query.all()
+    return aquatic_installations, ice_rinks, slides
 
 
 def _get_json_schema():
@@ -53,8 +65,8 @@ def installations():
     Return:
     The list of facilities in JSON format.
     """
-    aquatic_installations, ice_rinks, slides = _get_installations()
 
+    aquatic_installations, ice_rinks, slides = _get_installations()
     arr_filter = request.args.get("arrondissement")
     if arr_filter is not None:
         slides = Glissade.query.filter(
@@ -75,6 +87,10 @@ def installations():
     )
     serialized_ice_rinks = ice_rink_model.dump(ice_rinks)
     serialized_slides = slide_model.dump(slides)
+    serialized_aquatic_installations = aquatic_installation_model.dump(
+        aquatic_installations
+    )
+    serialized_ice_rinks = ice_rink_model.dump(ice_rinks)
 
     return jsonify(
         {
@@ -83,6 +99,14 @@ def installations():
             "patinoires": serialized_ice_rinks,
         }
     )
+
+
+@api.route("/arrondissements", methods=["GET"])
+def boroughs():
+    borough_list = Arrondissement.query.all()
+    borough_model = ArrondissementModel(many=True)
+    serialized_boroughs = borough_model.dump(borough_list)
+    return jsonify(serialized_boroughs)
 
 
 @api.route("/installations-maj-2021", methods=["GET"])
@@ -164,6 +188,7 @@ def subscribe():
                 ),
                 500,
             )
+
     else:
         return (
             jsonify({"error": "Les données fournies ne sont pas valides."}),

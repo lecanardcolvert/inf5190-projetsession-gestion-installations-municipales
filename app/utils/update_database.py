@@ -18,7 +18,6 @@ from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
 from model.installation_aquatique import InstallationAquatique
 from model.glissade import Glissade
-from model.arrondissement import Arrondissement
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 CONFIG_FILE_PATH = os.path.join(BASE_DIR, "../config.yml")
