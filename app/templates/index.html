@@ -4,15 +4,52 @@
 
 {% block content %}
 
-<div class="mb-4">
-    <form class="needs-validation" action="{{ url_for('api.installations') }}" method="get" id="search-installations-form">
-        <div class="mb-3">
-            <label class="form-label" for="borough-name">Nom de l'arrondissement</label>
-            <input class="form-control" type="text" id="borough-name" name="arrondissement" aria-describedby="title-help">
-        </div>
+<div class="alert alert-warning alert-dismissible fade show" role="alert" style="display:none;" id="search-error">
 
-        <input class="btn btn-primary" type="submit" value="Rechercher" id="search-installations-submit">
-    </form>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="mb-4">
+    <p>Sélectionnez un mode de recherche.</p>
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="search-mode" id="select-mode-borough" checked>
+            <label class="form-check-label" for="select-mode-borough">
+                Par arrondissement
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="search-mode" id="select-mode-name">
+            <label class="form-check-label" for="select-mode-name">
+                Par nom
+            </label>
+        </div>
+    </div>
+
+    <div id="search-borough-div">
+        <form class="needs-validation" action="{{ url_for('api.facilities') }}" method="get" id="search-borough-form">
+            <div class="mb-3">
+                <label class="form-label" for="borough-name">Nom de l'arrondissement</label>
+                <input class="form-control" type="text" id="borough-name" name="arrondissement" aria-describedby="title-help">
+            </div>
+
+            <input class="btn btn-primary" type="submit" value="Rechercher" id="submit-search-borough">
+        </form>
+    </div>
+
+    <div id="search-name-div" style="display:none;">
+        <form class="needs-validation" action="{{ url_for('api.facility_name_search') }}" method="get" id="search-name-form">
+            <div class="mb-3">
+                <label class="form-label" for="facility-name">Nom de l'installation</label>
+                <select class="form-select" aria-label="Nom de l'installation" name="nom" id="facility-name">
+                    <option selected>Veuillez sélectionner...</option>
+                </select>
+            </div>
+
+            <input class="btn btn-primary" type="submit" value="Rechercher" id="submit-search-name">
+        </form>
+    </div>
 </div>
 
 <h1>Résultats de la recherche</h1>
@@ -78,4 +115,8 @@
     </div>
 </div>
 
+{% endblock %}
+
+{% block script %}
+<script src="/js/fill_facility_name_dropdown.js"></script>
 {% endblock %}
