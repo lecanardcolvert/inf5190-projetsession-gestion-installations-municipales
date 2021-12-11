@@ -14,6 +14,7 @@ from utils.utils import parse_integer
 from utils.utils import reformat_ince_rink_xml
 from utils.utils import trim_space_in_name
 from utils.sender import send_mail
+from utils.sender import send_tweet
 from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
 from model.installation_aquatique import InstallationAquatique
@@ -51,6 +52,7 @@ def create_or_update_database():
         )
         insert_arrondissements(new_arrondissements)
         notify_by_mail(new_installations)
+        send_tweet(new_installations)
     except Exception:
         print(
             "Failed to parse xml from response\n(%s)" % traceback.format_exc()
@@ -324,4 +326,4 @@ def notify_by_mail(new_installations):
         print(f" * Sending email to {RECIPIENT_EMAIL} about new_installations")
         send_mail(RECIPIENT_EMAIL, SUBJECT, body)
     else:
-        print("No new installations. Sending email aborted")
+        print(" * No new installations. Sending email aborted")

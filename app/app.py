@@ -3,15 +3,15 @@ import os
 from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
 
+import config
 from api.api import api
 from utils.shared import db
-from config import Config, DB_PATH
 from routes.router import router
 from utils.update_database import create_or_update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
-app.config.from_object(Config)
+app.config.from_object(config.config["development"])
 app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
 
@@ -36,7 +36,7 @@ app.register_blueprint(router)
 
 # Create database if it doesn't exist yet
 with app.app_context():
-    if not os.path.isfile(DB_PATH):
+    if not os.path.isfile(config.DB_PATH):
         print(" * CREATING DATABASE")
         db.create_all()
         create_or_update_database()
