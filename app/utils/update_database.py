@@ -1,8 +1,10 @@
 # Native and installed modules
 import csv
+import os
 import traceback
 import urllib3
 import xmltodict
+import yaml
 from datetime import datetime
 from io import StringIO
 
@@ -11,12 +13,20 @@ from utils.shared import db
 from utils.utils import parse_integer
 from utils.utils import reformat_ince_rink_xml
 from utils.utils import trim_space_in_name
-from utils.sendMail import sendMail
+from utils.sender import send_mail
 from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
 from model.installation_aquatique import InstallationAquatique
 from model.glissade import Glissade
 from model.arrondissement import Arrondissement
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+CONFIG_FILE_PATH = os.path.join(BASE_DIR, "../config.yml")
+with open(CONFIG_FILE_PATH, "r") as config_file:
+    config = yaml.safe_load(config_file)
+mail = config["mail"]
+RECIPIENT_EMAIL = mail["destination"]
+SUBJECT = mail["subject"]
 
 new_installations = []
 
@@ -40,7 +50,7 @@ def create_or_update_database():
             aquatic_installation_data, new_arrondissements
         )
         insert_arrondissements(new_arrondissements)
-        sendMail(new_installations)
+        notify_by_mail(new_installations)
     except Exception:
         print(
             "Failed to parse xml from response\n(%s)" % traceback.format_exc()
@@ -297,3 +307,21 @@ def insert_arrondissements(new_arrondissements):
 
     db.session.add_all(arrondissements)
     db.session.commit()
+
+
+def notify_by_mail(new_installations):
+    """
+    Notify the defined recipient in config by mail about added installations
+    """
+
+    body = """
+    Bonjour, voici la liste des nouvelles installations que nous avons ajouté
+    depuis votre dernière visite:
+    """
+    if len(new_installations) > 0:
+        for installation in new_installations:
+            body += f"\n\t- {installation}"
+        print(f" * Sending email to {RECIPIENT_EMAIL} about new_installations")
+        send_mail(RECIPIENT_EMAIL, SUBJECT, body)
+    else:
+        print("No new installations. Sending email aborted")

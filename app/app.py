@@ -21,8 +21,8 @@ update_job.add_job(
     lambda: update_database(),
     "cron",
     day="*",
-    hour="18",
-    minute="51",
+    hour="0",
+    minute="00",
 )
 update_job.start()
 atexit.register(lambda: update_job.shutdown(wait=False))
