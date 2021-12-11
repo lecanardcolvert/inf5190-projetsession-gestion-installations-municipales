@@ -1,5 +1,13 @@
 # Native and installed modules
+import db
+import flask
+import json
+import jsonschema
 from flask import Blueprint, jsonify, request
+from jsonschema import validate
+
+# Custom modules
+from model.subscriber import Subscriber, SubscriberModel
 from sqlalchemy.orm import contains_eager
 
 # Custom modules
@@ -10,23 +18,27 @@ from model.installation_aquatique import (
     InstallationAquatiqueModel,
 )
 from model.patinoire import Patinoire, PatinoireModel
+from sqlalchemy import exc
+from utils.shared import db
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
 
-def _get_installations():
-    """
-    Returns the list of facilities for later usage by an API.
+def _get_json_schema():
+    with open("user_schema.json", "r") as file:
+        schema = json.load(file)
+    return schema
 
-    Return:
-        The aquatic installations
-        The ice rinks
-        The slides
-    """
-    aquatic_installations = InstallationAquatique.query.all()
-    ice_rinks = Patinoire.query.all()
-    slides = Glissade.query.all()
-    return aquatic_installations, ice_rinks, slides
+
+def _validate_json(schema_filename, json_data):
+    with open(schema_filename, "r") as file:
+        schema = json.load(file)
+
+    try:
+        validate(instance=json_data, schema=schema)
+    except jsonschema.exceptions.ValidationError as err:
+        return False
+    return True
 
 
 @api.route("/installations", methods=["GET"])
@@ -111,6 +123,10 @@ def facilities_updated_2021():
     )
     serialized_ice_rinks = ice_rink_model.dump(skating_rinks)
     serialized_slides = slide_model.dump(slides)
+    serialized_aquatic_installations = aquatic_installation_model.dump(
+        aquatic_installations
+    )
+    serialized_ice_rinks = ice_rink_model.dump(skating_rinks)
 
     return jsonify(
         {
@@ -119,3 +135,37 @@ def facilities_updated_2021():
             "patinoires": serialized_ice_rinks,
         }
     )
+
+
+@api.route("/abonnement", methods=["POST"])
+def subscribe():
+    json_schema_path = flask.current_app.root_path + "/schemas/subscribe.json"
+    request_data = request.get_json()
+
+    if _validate_json(json_schema_path, request_data):
+        subscriber = Subscriber(
+            request_data["full_name"],
+            request_data["email"],
+            request_data["boroughs_to_follow"],
+        )
+
+        try:
+            db.session.add(subscriber)
+            db.session.commit()
+            subscriber_model = SubscriberModel()
+            serialized_subscriber = subscriber_model.dump(subscriber)
+            return jsonify(serialized_subscriber), 201
+        except exc.SQLAlchemyError as err:
+            return (
+                jsonify(
+                    {
+                        "error": "Une erreur est survenue lors de l'ajout dans la base de données."
+                    }
+                ),
+                500,
+            )
+    else:
+        return (
+            jsonify({"error": "Les données fournies ne sont pas valides."}),
+            400,
+        )

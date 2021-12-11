@@ -4,6 +4,11 @@ version: v1
 baseUri: http://127.0.0.1/api
 mediaType: application/json
 types:
+  Response:
+    type: object
+    properties:
+      status: string
+      message: string
   Arrondissement:
     type: object
     properties:
@@ -43,6 +48,41 @@ types:
       deblaye?: boolean
       arrose?: boolean
       resurface?: boolean
+  Subscriber: |
+    {
+     "$schema" : "https://json-schema.org/draft/2020-12/schema#",
+     "title" : "Nouvel abonné",
+     "description" : "Valider les informations d'un nouvel abonné",
+     "type" : "object",
+     "properties" : {
+        "full_name" : {
+           "description" : "Nom complet",
+           "type" : "string",
+           "minLength" : 1,
+           "maxLength": 64
+        },
+        "email" : {
+           "description" : "Courriel",
+           "type" : "string",
+           "minLength" : 1,
+           "maxLength" : 64,
+           "pattern" : "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+        },
+        "boroughs_to_follow" : {
+           "description" : "ID des arrondissements à suivre",
+           "type" : "array",
+           "items" : {
+              "type" : "integer"
+           },
+           "maxLength" : 255,
+           "uniqueItems" : true
+        }
+     },
+     "required" : [
+        "full_name",
+        "email"
+     ]
+    }
   Installation:
     type: [Glissade | InstallationAquatique | Patinoire]
 documentation:
@@ -115,6 +155,50 @@ documentation:
             		}
             	]
             }
+      500:
+        description: Une erreur interne s'est produite. L'erreur a été signalée à l'équipe de développement.
+/abonnement:
+  post:
+    description: S'abonner aux alertes par courriel
+    queryParameters:
+      subscriber:
+        description: Les informations de la personne
+        displayName: Informations de la personne
+        type: Subscriber
+        required: true
+        example: |
+          {
+            "full_name":"Alex",
+            "email":"courriel@hebergeur.com",
+            "boroughs_to_follow":[1,2,3]
+          }
+    responses:
+      201:
+        description: La personne s'est abonné avec succès.
+        body:
+          type: Subscriber
+          example: |
+            {
+              "full_name":"Alex",
+              "email":"courriel@hebergeur.com",
+              "boroughs_to_follow":[1,2,3]
+            }
+      400:
+        description: Les données fournies ne sont pas valides.
+        body:
+          type: Response
+          example : |
+            {
+              "error": "Les données fournies ne sont pas valides."
+            }
+      500:
+        description: Une erreur interne s'est produite. L'erreur a été signalée à l'équipe de développement.
+        body:
+          type: Response
+          example: |
+            {
+              "error": "Une erreur est survenue lors de l'ajout dans la base de données."
+            }
 /installations-maj-2021:
   get:
     description: Retourne la liste des installations mises à jour en 2021. La liste est triée en ordre alphabétique.
@@ -171,4 +255,3 @@ documentation:
             		"resurface":0
             		}
             	]
-            }
