@@ -170,7 +170,7 @@ documentation:
           {
             "full_name":"Alex",
             "email":"courriel@hebergeur.com",
-            "boroughs_to_follow":"[1,2,3]"
+            "boroughs_to_follow":[1,2,3]
           }
     responses:
       201:
@@ -181,7 +181,7 @@ documentation:
             {
               "full_name":"Alex",
               "email":"courriel@hebergeur.com",
-              "boroughs_to_follow":"[1,2,3]"
+              "boroughs_to_follow":[1,2,3]
             }
       400:
         description: Les données fournies ne sont pas valides.
@@ -198,6 +198,7 @@ documentation:
           example: |
             {
               "error": "Une erreur est survenue lors de l'ajout dans la base de données."
+            }
 /installations-maj-2021:
   get:
     description: Retourne la liste des installations mises à jour en 2021. La liste est triée en ordre alphabétique.
