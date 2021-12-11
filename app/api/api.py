@@ -237,7 +237,8 @@ def facilities_updated_2021_xml():
 @api.route("/installations-noms", methods=["GET"])
 def facility_names():
     """
-    Return the list of facility names in the json format.
+    Return the list of facility names in the json format, in alphabetical
+    order.
 
     Returns:
     json -- The list of facility names in json format
@@ -250,8 +251,9 @@ def facility_names():
         facility_names.append(ice_rink.nom)
     for slide in slides:
         facility_names.append(slide.nom)
+    sorted_facility_names = sorted(facility_names)
 
-    return jsonify(facility_names)
+    return jsonify(sorted_facility_names)
 
 
 @api.route("/installations-recherche-nom", methods=["GET"])
