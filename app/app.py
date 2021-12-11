@@ -7,6 +7,7 @@ from flask import Flask, render_template
 # Custom modules
 from api.api import api
 from config import Config, DB_PATH
+from flask import g
 from model.arrondissement import Arrondissement, ArrondissementModel
 from routes.router import router
 from utils.shared import db
@@ -24,7 +25,7 @@ update_job.add_job(
     lambda: update_database(),
     "cron",
     day="*",
-    hour="0",
+    hour="00",
     minute="00",
 )
 update_job.start()
@@ -41,6 +42,7 @@ app.register_blueprint(router)
 with app.app_context():
     if not os.path.isfile(DB_PATH):
         print(" * CREATING DATABASE")
+        g.LAST_DATABASE_ACTION = "CREATE"
         db.create_all()
         create_or_update_database()
         print(" * CREATION FINISHED")
@@ -49,6 +51,7 @@ with app.app_context():
 def update_database():
     with app.app_context():
         print(" * UPDATING DATABASE")
+        g.LAST_DATABASE_ACTION = "UPDATE"
         create_or_update_database()
         print(" * UPDATE FINISHED")
 
