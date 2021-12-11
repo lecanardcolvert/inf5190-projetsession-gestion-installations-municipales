@@ -18,7 +18,6 @@ from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
 from model.installation_aquatique import InstallationAquatique
 from model.glissade import Glissade
-from model.arrondissement import Arrondissement
 
 # List of new installations
 new_installations = []
