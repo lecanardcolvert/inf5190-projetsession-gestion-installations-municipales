@@ -2,13 +2,7 @@
 title: API du projet de session INF5190
 version: v1
 baseUri: http://127.0.0.1/api
-mediaType: application/json
 types:
-  Response:
-    type: object
-    properties:
-      status: string
-      message: string
   Arrondissement:
     type: object
     properties:
@@ -48,41 +42,6 @@ types:
       deblaye?: boolean
       arrose?: boolean
       resurface?: boolean
-  Subscriber: |
-    {
-     "$schema" : "https://json-schema.org/draft/2020-12/schema#",
-     "title" : "Nouvel abonné",
-     "description" : "Valider les informations d'un nouvel abonné",
-     "type" : "object",
-     "properties" : {
-        "full_name" : {
-           "description" : "Nom complet",
-           "type" : "string",
-           "minLength" : 1,
-           "maxLength": 64
-        },
-        "email" : {
-           "description" : "Courriel",
-           "type" : "string",
-           "minLength" : 1,
-           "maxLength" : 64,
-           "pattern" : "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
-        },
-        "boroughs_to_follow" : {
-           "description" : "ID des arrondissements à suivre",
-           "type" : "array",
-           "items" : {
-              "type" : "integer"
-           },
-           "maxLength" : 255,
-           "uniqueItems" : true
-        }
-     },
-     "required" : [
-        "full_name",
-        "email"
-     ]
-    }
   Installation:
     type: [Glissade | InstallationAquatique | Patinoire]
 documentation:
@@ -105,110 +64,59 @@ documentation:
       200:
         description: La liste des installations a été correctement envoyée.
         body:
-          type: Installation
-          example: |
-            {
-            	"glissades":[{
-            		"id":3,
-            		"nom":"Glissade, Parc Arthur-Therrien",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"ouvert":0,
-            		"deblaye":0,
-            		"condition":"N/A"
-            		}
-            	],
-            	"installations_aquatiques":[{
-            		"id":3,
-            		"nom":"Parc Normand Dawe",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"type":"Jeu d'eau",
-            		"adresse":"1 060, Rue Woodland",
-            		"propriete":"Municipale",
-            		"gestion":"Municipale",
-            		"equipement":""
-            		}
-            	],
-            	"patinoires":[{
-            		"id":251,
-            		"nom":"Glissade, Parc Arthur-Therrien ()",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"date_heure":"2021-11-15 12:18:10",
-            		"ouvert":0,
-            		"deblaye":0,
-            		"arrose":0,
-            		"resurface":0
-            		}
-            	]
-            }
+          application/json:
+            type: Installation
+            example: |
+              {
+                  "glissades":[{
+                      "id":3,
+                      "nom":"Glissade, Parc Arthur-Therrien",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "ouvert":0,
+                      "deblaye":0,
+                      "condition":"N/A"
+                      }
+                  ],
+                  "installations_aquatiques":[{
+                      "id":3,
+                      "nom":"Parc Normand Dawe",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "type":"Jeu d'eau",
+                      "adresse":"1 060, Rue Woodland",
+                      "propriete":"Municipale",
+                      "gestion":"Municipale",
+                      "equipement":""
+                      }
+                  ],
+                  "patinoires":[{
+                      "id":251,
+                      "nom":"Glissade, Parc Arthur-Therrien ()",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "date_heure":"2021-11-15 12:18:10",
+                      "ouvert":0,
+                      "deblaye":0,
+                      "arrose":0,
+                      "resurface":0
+                      }
+                  ]
+              }
       500:
-        description: Une erreur interne s'est produite. L'erreur a été signalée à l'équipe de développement.
-/abonnement:
-  post:
-    description: S'abonner aux alertes par courriel
-    queryParameters:
-      subscriber:
-        description: Les informations de la personne
-        displayName: Informations de la personne
-        type: Subscriber
-        required: true
-        example: |
-          {
-            "full_name":"Alex",
-            "email":"courriel@hebergeur.com",
-<<<<<<< HEAD
-            "boroughs_to_follow":"[1,2,3]"
-=======
-            "boroughs_to_follow":[1,2,3]
->>>>>>> dev
-          }
-    responses:
-      201:
-        description: La personne s'est abonné avec succès.
-        body:
-          type: Subscriber
-          example: |
-            {
-              "full_name":"Alex",
-              "email":"courriel@hebergeur.com",
-<<<<<<< HEAD
-              "boroughs_to_follow":"[1,2,3]"
-=======
-              "boroughs_to_follow":[1,2,3]
->>>>>>> dev
-            }
-      400:
-        description: Les données fournies ne sont pas valides.
-        body:
-          type: Response
-          example : |
-            {
-              "error": "Les données fournies ne sont pas valides."
-            }
-      500:
-        description: Une erreur interne s'est produite. L'erreur a été signalée à l'équipe de développement.
-        body:
-          type: Response
-          example: |
-            {
-              "error": "Une erreur est survenue lors de l'ajout dans la base de données."
-            }
-<<<<<<< HEAD
-=======
+        description: Une erreur interne est survenue. Elle a été envoyée à l'équipe de développement.
 /installations-maj-2021:
   get:
     description: Retourne la liste des installations mises à jour en 2021. La liste est triée en ordre alphabétique.
@@ -216,53 +124,163 @@ documentation:
       200:
         description: La liste des installations a été correctement envoyée.
         body:
-          type: Installation
-          example: |
-            {
-            	"glissades":[{
-            		"id":3,
-            		"nom":"Glissade, Parc Arthur-Therrien",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"ouvert":0,
-            		"deblaye":0,
-            		"condition":"N/A"
-            		}
-            	],
-            	"installations_aquatiques":[{
-            		"id":3,
-            		"nom":"Parc Normand Dawe",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"type":"Jeu d'eau",
-            		"adresse":"1 060, Rue Woodland",
-            		"propriete":"Municipale",
-            		"gestion":"Municipale",
-            		"equipement":""
-            		}
-            	],
-            	"patinoires":[{
-            		"id":251,
-            		"nom":"Glissade, Parc Arthur-Therrien ()",
-            		"arrondissement":{
-            			"id":16,
-            			"nom":"Verdun",
-            			"cle":"ver",
-            			"date_maj":"2021-11-15T12:18:10"
-            		},
-            		"date_heure":"2021-11-15 12:18:10",
-            		"ouvert":0,
-            		"deblaye":0,
-            		"arrose":0,
-            		"resurface":0
-            		}
-            	]
->>>>>>> dev
+          application/json:
+            type: Installation
+            example: |
+              {
+                  "glissades":[{
+                      "id":3,
+                      "nom":"Glissade, Parc Arthur-Therrien",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "ouvert":0,
+                      "deblaye":0,
+                      "condition":"N/A"
+                      }
+                  ],
+                  "installations_aquatiques":[{
+                      "id":3,
+                      "nom":"Parc Normand Dawe",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "type":"Jeu d'eau",
+                      "adresse":"1 060, Rue Woodland",
+                      "propriete":"Municipale",
+                      "gestion":"Municipale",
+                      "equipement":""
+                      }
+                  ],
+                  "patinoires":[{
+                      "id":251,
+                      "nom":"Glissade, Parc Arthur-Therrien ()",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "date_heure":"2021-11-15 12:18:10",
+                      "ouvert":0,
+                      "deblaye":0,
+                      "arrose":0,
+                      "resurface":0
+                      }
+                  ]
+              }
+      500:
+        description: Une erreur interne est survenue. Elle a été envoyée à l'équipe de développement.
+/installations-maj-2021.xml:
+  get:
+    description: Retourne la liste des installations mises à jour en 2021, au format XML. La liste est triée en ordre alphabétique.
+    responses:
+      200:
+        description: La liste des installations a été correctement envoyée.
+        body:
+          application/xml:
+            type: Installation
+            example: |
+              <?xml version="1.0" ?>
+              <installations>
+                <glissades>
+                  <item>
+                      <id>1</id>
+                      <nom>Aire de glissade ,Don-Bosco</nom>
+                      <arrondissement>
+                          <id>12</id>
+                          <nom>Rivière-des-Prairies-Pointe-aux-Trembles</nom>
+                          <cle>rdp</cle>
+                          <date_maj>2021-10-18T13:45:13</date_maj>
+                      </arrondissement>
+                      <ouvert>0</ouvert>
+                      <deblaye>0</deblaye>
+                      <condition>N/A</condition>
+                  </item>
+                  <item>
+                      <id>4</id>
+                      <nom>Aire de glissade, Parc Confédération</nom>
+                      <arrondissement>
+                          <id>2</id>
+                          <nom>Côte-des-Neiges-Notre-Dame-de-Grâce</nom>
+                          <cle>cdn</cle>
+                          <date_maj>2021-12-06T11:28:59</date_maj>
+                      </arrondissement>
+                      <ouvert>0</ouvert>
+                      <deblaye>0</deblaye>
+                      <condition>N/A</condition>
+                  </item>
+                </glissades>
+                <installations_aquatiques>
+                  <item>
+                      <id>54</id>
+                      <nom>Centre aquatique Rivières-des-Prairies</nom>
+                      <arrondissement>
+                          <id>12</id>
+                          <nom>Rivière-des-Prairies-Pointe-aux-Trembles</nom>
+                          <cle>rdp</cle>
+                          <date_maj>2021-10-18T13:45:13</date_maj>
+                      </arrondissement>
+                      <type>Piscine intérieure</type>
+                      <adresse>12 515, Boulevard Rodolphe-Forget</adresse>
+                      <propriete>Municipale</propriete>
+                      <gestion>Municipale</gestion>
+                      <equipement>Complexe aquatique</equipement>
+                  </item>
+                  <item>
+                      <id>165</id>
+                      <nom>Centre communautaire Notre-Dame-de-Grâce</nom>
+                      <arrondissement>
+                          <id>2</id>
+                          <nom>Côte-des-Neiges-Notre-Dame-de-Grâce</nom>
+                          <cle>cdn</cle>
+                          <date_maj>2021-12-06T11:28:59</date_maj>
+                      </arrondissement>
+                      <type>Piscine intérieure</type>
+                      <adresse>5 311, Chemin de la Côte-Saint-Antoine</adresse>
+                      <propriete>Municipale</propriete>
+                      <gestion>Municipale</gestion>
+                      <equipement>Piscine récréative</equipement>
+                  </item>
+                </installations_aquatiques>
+                <patinoires>
+                  <item>
+                      <id>157</id>
+                      <nom>Aire de glissade ,Don-Bosco ()</nom>
+                      <arrondissement>
+                          <id>12</id>
+                          <nom>Rivière-des-Prairies-Pointe-aux-Trembles</nom>
+                          <cle>rdp</cle>
+                          <date_maj>2021-10-18T13:45:13</date_maj>
+                      </arrondissement>
+                      <date_heure>2021-10-18 13:45:13</date_heure>
+                      <ouvert>0</ouvert>
+                      <deblaye>0</deblaye>
+                      <arrose>0</arrose>
+                      <resurface>0</resurface>
+                  </item>
+                  <item>
+                      <id>1</id>
+                      <nom>Aire de glissade, Ahuntsic ()</nom>
+                      <arrondissement>
+                          <id>0</id>
+                          <nom>Ahuntsic-Cartierville</nom>
+                          <cle/>
+                          <date_maj/>
+                      </arrondissement>
+                      <date_heure>2021-04-20 11:10:36</date_heure>
+                      <ouvert>0</ouvert>
+                      <deblaye>0</deblaye>
+                      <arrose>0</arrose>
+                      <resurface>0</resurface>
+                  </item>
+                </patinoires>
+              </installations>
+      500:
+        description: Une erreur interne est survenue. Elle a été envoyée à l'équipe de développement.

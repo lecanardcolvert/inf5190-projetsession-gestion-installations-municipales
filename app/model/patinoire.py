@@ -6,7 +6,6 @@ from marshmallow_sqlalchemy import fields
 from model.arrondissement import ArrondissementModel
 from sqlalchemy.orm import relationship
 from utils.shared import db, ma
-from utils.utils import parse_integer
 
 
 class Patinoire(db.Model):
@@ -24,21 +23,23 @@ class Patinoire(db.Model):
     arrose = db.Column(db.Integer)
     resurface = db.Column(db.Integer)
 
-    def __init__(self, ice_rink_info):
-        ice_rink_condition = ice_rink_info["condition"]
-        last_condition = ice_rink_condition[len(ice_rink_condition) - 1]
-        self.nom = ice_rink_info["nom_pat"]
-        self.date_heure = last_condition["date_heure"]
-        self.ouvert = parse_integer(last_condition["ouvert"])
-        self.deblaye = parse_integer(last_condition["deblaye"])
-        self.arrose = parse_integer(last_condition["arrose"])
-        self.resurface = parse_integer(last_condition["resurface"])
-
-    def set_arrondissement_id(self, arrondissement_id):
+    def __init__(
+        self,
+        nom,
+        arrondissement_id,
+        date_heure,
+        ouvert,
+        deblaye,
+        arrose,
+        resurface,
+    ):
+        self.nom = nom
         self.arrondissement_id = arrondissement_id
-
-    def get_name(self):
-        return self.nom
+        self.date_heure = date_heure
+        self.ouvert = ouvert
+        self.deblaye = deblaye
+        self.arrose = arrose
+        self.resurface = resurface
 
 
 class PatinoireModel(ma.SQLAlchemyAutoSchema):
