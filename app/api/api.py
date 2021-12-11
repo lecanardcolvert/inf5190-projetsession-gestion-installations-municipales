@@ -22,6 +22,20 @@ from utils.shared import db
 api = Blueprint("api", __name__, url_prefix="/api")
 
 
+def _get_installations():
+    """
+    Returns the list of facilities for later usage by an API.
+    Return:
+        The aquatic installations
+        The ice rinks
+        The slides
+    """
+    aquatic_installations = InstallationAquatique.query.all()
+    ice_rinks = Patinoire.query.all()
+    slides = Glissade.query.all()
+    return aquatic_installations, ice_rinks, slides
+
+
 def _get_json_schema():
     with open("user_schema.json", "r") as file:
         schema = json.load(file)
@@ -51,8 +65,8 @@ def installations():
     Return:
     The list of facilities in JSON format.
     """
-    aquatic_installations, ice_rinks, slides = _get_installations()
 
+    aquatic_installations, ice_rinks, slides = _get_installations()
     arr_filter = request.args.get("arrondissement")
     if arr_filter is not None:
         slides = Glissade.query.filter(
@@ -73,10 +87,10 @@ def installations():
     )
     serialized_ice_rinks = ice_rink_model.dump(ice_rinks)
     serialized_slides = slide_model.dump(slides)
-    serialized_aquatic_installations = aquatic_installations_model.dump(
+    serialized_aquatic_installations = aquatic_installation_model.dump(
         aquatic_installations
     )
-    serialized_ice_rinks = ice_rinks_model.dump(skating_rinks)
+    serialized_ice_rinks = ice_rink_model.dump(ice_rinks)
 
     return jsonify(
         {
