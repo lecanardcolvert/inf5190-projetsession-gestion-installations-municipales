@@ -1,32 +1,25 @@
 # Native and installed modules
 import csv
-import os
 import traceback
 import urllib3
 import xmltodict
-import yaml
 from datetime import datetime
 from io import StringIO
 
 # Custom modules
+import config
 from utils.shared import db
 from utils.utils import parse_integer
 from utils.utils import reformat_ince_rink_xml
 from utils.utils import trim_space_in_name
 from utils.sender import send_mail
+from utils.sender import send_tweet
 from model.patinoire import Patinoire
 from model.arrondissement import Arrondissement
 from model.installation_aquatique import InstallationAquatique
 from model.glissade import Glissade
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-CONFIG_FILE_PATH = os.path.join(BASE_DIR, "../config.yml")
-with open(CONFIG_FILE_PATH, "r") as config_file:
-    config = yaml.safe_load(config_file)
-mail = config["mail"]
-RECIPIENT_EMAIL = mail["destination"]
-SUBJECT = mail["subject"]
-
+# List of new installations
 new_installations = []
 
 
@@ -50,6 +43,8 @@ def create_or_update_database():
         )
         insert_arrondissements(new_arrondissements)
         notify_by_mail(new_installations)
+        notify_on_twitter(new_installations)
+        new_installations.clear()
     except Exception:
         print(
             "Failed to parse xml from response\n(%s)" % traceback.format_exc()
@@ -320,7 +315,21 @@ def notify_by_mail(new_installations):
     if len(new_installations) > 0:
         for installation in new_installations:
             body += f"\n\t- {installation}"
-        print(f" * Sending email to {RECIPIENT_EMAIL} about new_installations")
-        send_mail(RECIPIENT_EMAIL, SUBJECT, body)
+        print(
+            f" * Sending email to {config.RECIPIENT} about new installations"
+        )
+        send_mail(config.RECIPIENT, config.SUBJECT, body)
     else:
-        print("No new installations. Sending email aborted")
+        print(" * No new installations. Sending email aborted")
+
+
+def notify_on_twitter(new_installations):
+    """
+    Notify on twitter about new added installations
+    """
+
+    if len(new_installations) > 0:
+        print(" * Publishing updates result on Twitter")
+        send_tweet(new_installations)
+    else:
+        print(" * No new installations. Tweeting aborted")
