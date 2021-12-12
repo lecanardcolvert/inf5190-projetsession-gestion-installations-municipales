@@ -23,7 +23,7 @@ from model.glissade import Glissade, GlissadeModel
 from model.patinoire import Patinoire, PatinoireModel
 from utils.shared import db
 
-api = Blueprint("api", __name__, url_prefix="/api")
+api = Blueprint("api", __name__, url_prefix="/api/v1")
 playground_slide_schema = GlissadeModel()
 
 
