@@ -24,6 +24,7 @@ from model.patinoire import Patinoire, PatinoireModel
 from utils.shared import db
 
 api = Blueprint("api", __name__, url_prefix="/api")
+playground_slide_schema = GlissadeModel()
 
 
 def _get_facilities():
@@ -72,23 +73,24 @@ def _validate_json(schema_filename, json_data):
     return True
 
 
-def validate_schema(schema):
-    """
-    Decorator for validating request using schema
-
-    Keyword arguments:
-    schema -- The schema which will be used to validate request
-    """
-
-    def inner_function(f):
-        @wraps(f)
-        def decorated(*args, **kwargs):
-            validate(instance=request.json, schema=schema)
-            f(*args, **kwargs)
-
-        return decorated
-
-    return inner_function
+# TODO: not working for now
+# def validate_schema(schema):
+#     """
+#     Decorator for validating request using schema
+#
+#     Keyword arguments:
+#     schema -- The schema which will be used to validate request
+#     """
+#
+#     def inner_function(f):
+#         @wraps(f)
+#         def decorated(*args, **kwargs):
+#             validate(instance=request.json, schema=schema)
+#             f(*args, **kwargs)
+#
+#         return decorated
+#
+#     return inner_function
 
 
 @api.app_errorhandler(ValidationError)
@@ -291,9 +293,14 @@ def subscribe():
 
 
 @api.route("/installations/glissades/<id>", methods=["PUT"])
-@validate_schema(update_playground_slide_schema)
+# @validate_schema(update_playground_slide_schema)
 def update_playground_slide(id):
-    """TODO"""
+    """
+    Update a playground_slide
+
+    keyword arguments:
+    id -- the id of the playground slide
+    """
 
     query = Glissade.query.filter(Glissade.id == id)
     result = query.first()
@@ -311,4 +318,11 @@ def update_playground_slide(id):
         )
     else:
         validate(instance=request.json, schema=update_playground_slide_schema)
-        return 200
+        playground_slide = Glissade.query.get(id)
+        playground_slide.nom = request.json["nom"]
+        playground_slide.arrondissement_id = request.json["arrondissement_id"]
+        playground_slide.ouvert = request.json["ouvert"]
+        playground_slide.deblaye = request.json["deblaye"]
+        playground_slide.condition = request.json["condition"]
+        db.session.commit()
+        return playground_slide_schema.jsonify(playground_slide), 200
