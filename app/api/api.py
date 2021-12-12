@@ -1,14 +1,18 @@
 # Native and installed modules
 import json
-import jsonschema
 from dicttoxml import dicttoxml
 from jsonschema import validate
+from jsonschema.exceptions import ValidationError
+from functools import wraps
+
+# from app import app
 from flask import Blueprint, jsonify, request, Response, current_app
 from sqlalchemy import exc
 from sqlalchemy.orm import contains_eager
 from xml.dom.minidom import parseString
 
 # Custom modules
+from schemas.schemas import update_playground_slide_schema
 from model.arrondissement import Arrondissement, ArrondissementModel
 from model.installation_aquatique import (
     InstallationAquatique,
@@ -63,9 +67,38 @@ def _validate_json(schema_filename, json_data):
 
     try:
         validate(instance=json_data, schema=schema)
-    except jsonschema.exceptions.ValidationError as err:
+    except ValidationError as err:
         return False
     return True
+
+
+def validate_schema(schema):
+    """
+    Decorator for validating request using schema
+
+    Keyword arguments:
+    schema -- The schema which will be used to validate request
+    """
+
+    def inner_function(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            validate(instance=request.json, schema=schema)
+            f(*args, **kwargs)
+
+        return decorated
+
+    return inner_function
+
+
+@api.app_errorhandler(ValidationError)
+def give_validation_error(e):
+    """Give an error response when request validation fails."""
+
+    return (
+        jsonify({"error": {"code": "Bad Request", "message": e.message}}),
+        400,
+    )
 
 
 @api.route("/installations", methods=["GET"])
@@ -255,3 +288,27 @@ def subscribe():
             jsonify({"error": "Les données fournies ne sont pas valides."}),
             400,
         )
+
+
+@api.route("/installations/glissades/<id>", methods=["PUT"])
+@validate_schema(update_playground_slide_schema)
+def update_playground_slide(id):
+    """TODO"""
+
+    query = Glissade.query.filter(Glissade.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this playground_slide",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        validate(instance=request.json, schema=update_playground_slide_schema)
+        return 200
