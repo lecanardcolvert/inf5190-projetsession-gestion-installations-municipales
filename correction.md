@@ -299,13 +299,21 @@ que vous recherchez.
 
 ## Fonctionnalités D3 <a name = "D3"></a>
 
-> Auteur:
+> Auteur: Sally Junior Jean Axel, SALLY (SALS20029908)
 
-## Fonctionnalités D4 <a name = "D3"></a>
+Pour tester cette fonctionnalité, il faut
 
-> Auteur:
+1. Lancer l'application
+2. Faire une recherche par nom
+3. Pour supprimer une installation, il suffit de cliquer sur le bouton supprimer.
+4. Pour modifier une installation, il suffit de cliquer sur le bouton edit.
+5. Pour vérifier les résultats, il suffit de refaire une nouvelle recherche.
 
-## Fonctionnalités F1 <a name = "D3"></a>
+## Fonctionnalités D4 <a name = "D4"></a>
+
+> Auteur: Sally Junior Jean Axel, SALLY (SALS20029908)
+
+## Fonctionnalités F1 <a name = "F1"></a>
 
 > Auteur: H. Bourdeau, Alexandre (HAMA12128907)
 

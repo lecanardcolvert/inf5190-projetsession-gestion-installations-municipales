@@ -22,7 +22,12 @@ $(document).ready(function() {
           window.location.href = 'subscribe-success';
         } else {
           console.log(xhr.response.error);
-          $("#subscribe-error").text(xhr.response.error);
+          if (xhr.response.error.code === "Bad Request") {
+            $("#subscribe-error")
+                .text("Veuillez remplir tous les champs correctement");
+          } else {
+            $("#subscribe-error").text(xhr.response.error.message);
+          }
           $("#subscribe-error").show();
         }
       }
@@ -129,8 +134,9 @@ $(document).ready(function() {
             data : null,
             sortable : false,
             render : function(data, type, full) {
-              return '<button onclick=edit() class="btn btn-info btn-sm"' +
-                     full[0] + '>' +
+              return '<button onclick=edit("playground-slides",' + data["id"] +
+                     ') class="btn btn-info btn-sm"' +
+                     '>' +
                      'Edit' +
                      '</button>';
             }
@@ -139,8 +145,8 @@ $(document).ready(function() {
             data : null,
             sortable : false,
             render : function(data, type, full) {
-              return '<button onclick=deleteData("glissades",' + data["id"] +
-                     ') class="btn btn-danger btn-sm"' +
+              return '<button onclick=deleteData("playground-slides",' +
+                     data["id"] + ') class="btn btn-danger btn-sm"' +
                      '>' +
                      'Supprimer' +
                      '</button>';
@@ -176,8 +182,9 @@ $(document).ready(function() {
             data : null,
             sortable : false,
             render : function(data, type, full) {
-              return '<button onclick=edit() class="btn btn-info btn-sm"' +
-                     full[0] + '>' +
+              return '<button onclick=edit("aquatics",' + data["id"] +
+                     ') class="btn btn-info btn-sm"' +
+                     '>' +
                      'Edit' +
                      '</button>';
             }
@@ -222,8 +229,9 @@ $(document).ready(function() {
             data : null,
             sortable : false,
             render : function(data, type, full) {
-              return '<button onclick=edit() class="btn btn-info btn-sm"' +
-                     full[0] + '>' +
+              return '<button onclick=edit("ice-rinks",' + data["id"] +
+                     ') class="btn btn-info btn-sm"' +
+                     '>' +
                      'Edit' +
                      '</button>';
             }
@@ -246,7 +254,9 @@ $(document).ready(function() {
   }
 });
 
-function edit() { alert("Bonjour"); }
+function edit(type, id) {
+  window.location.href = '/installations/' + type + "/" + id + "/edit";
+}
 function deleteData(type, id) {
   var jqxhr = $.ajax({
     type : 'DELETE',
@@ -254,4 +264,98 @@ function deleteData(type, id) {
   });
   jqxhr.done(function(data) { alert("La suppression a réussi"); });
   jqxhr.fail(function(jqXHR) { alert("La suppression a échouée"); });
+}
+
+function validatePlaygroundSlide(id) {
+  $(".validate").on('click', function(event) {
+    var playgroundSlides = {
+      nom : $("#nom").val(),
+      arrondissement_id : $("#arrondissement_id").val(),
+      ouvert : $("#ouvert").val(),
+      deblaye : $("#deblaye").val(),
+      condition : $("#condition").val()
+    };
+    var jqxhr = $.ajax({
+      type : 'PUT',
+      url : '/api/v1/installations/playground-slides/' + id,
+      dataType : 'json',
+      contentType : 'application/json',
+      data : JSON.stringify(playgroundSlides)
+    });
+    jqxhr.done(function() {
+      alert("Mise à jour réalisée. Retour à la page d'accueil");
+      window.location = '/';
+    });
+    jqxhr.fail(function(jqXHR, text, err) {
+      if (jqXHR.status === 400) {
+        alert("Veuillez remplir tous les champs correctement");
+      } else {
+        alert(jqXHR.responseJSON.error.message);
+      }
+    });
+  });
+}
+
+function validateAquaticInstallation(id) {
+  $(".validate").on('click', function(event) {
+    var aquaticInstallation = {
+      nom : $("#nom").val(),
+      arrondissement_id : $("#arrondissement_id").val(),
+      type : $("#type").val(),
+      adresse : $("#adresse").val(),
+      propriete : $("#propriete").val(),
+      gestion : $("#gestion").val(),
+      equipement : $("#equipement").val()
+    };
+    var jqxhr = $.ajax({
+      type : 'PUT',
+      url : '/api/v1/installations/aquatics/' + id,
+      dataType : 'json',
+      contentType : 'application/json',
+      data : JSON.stringify(aquaticInstallation)
+    });
+    jqxhr.done(function() {
+      alert("Mise à jour réalisée. Retour à la page d'accueil");
+      window.location = '/';
+    });
+    jqxhr.fail(function(jqXHR, text, err) {
+      if (jqXHR.status === 400) {
+        alert("Veuillez remplir tous les champs correctement");
+      } else {
+        alert(jqXHR.responseJSON.error.message);
+      }
+    });
+  });
+}
+
+function validateIceRink(id) {
+  $(".validate").on('click', function(event) {
+    var iceRink = {
+      nom : $("#nom").val(),
+      arrondissement_id : $("#arrondissement_id").val(),
+      date_heure : $("#date_heure").val(),
+      ouvert : $("#ouvert").val(),
+      deblaye : $("#deblaye").val(),
+      arrose : $("#arrose").val(),
+      resurface : $("#resurface").val()
+    };
+    var jqxhr = $.ajax({
+      type : 'PUT',
+      url : '/api/v1/installations/ice-rinks/' + id,
+      dataType : 'json',
+      contentType : 'application/json',
+      data : JSON.stringify(iceRink)
+    });
+    jqxhr.done(function() {
+      alert("Mise à jour réalisée. Retour à la page d'accueil");
+      window.location = '/';
+    });
+    jqxhr.fail(function(jqXHR, text, err) {
+      if (jqXHR.status === 400) {
+        alert("Veuillez remplir tous les champs correctement");
+      } else {
+        alert(jqXHR.responseJSON.error.message);
+      }
+    });
+  });
 }

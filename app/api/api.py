@@ -182,8 +182,10 @@ def subscribe():
             return (
                 jsonify(
                     {
-                        "error": "Une erreur est survenue lors de l'ajout dans"
-                        " la base de données."
+                        "error": {
+                            "message": "Une erreur est survenue lors de l'ajout dans"
+                            " la base de données."
+                        }
                     }
                 ),
                 500,
@@ -191,7 +193,13 @@ def subscribe():
 
     else:
         return (
-            jsonify({"error": "Les données fournies ne sont pas valides."}),
+            jsonify(
+                {
+                    "error": {
+                        "message": "Les données fournies ne sont pas valides."
+                    }
+                }
+            ),
             400,
         )
 
@@ -377,13 +385,32 @@ def update_playground_slide(id):
             404,
         )
     else:
-        validate(instance=request.json, schema=update_playground_slide_schema)
+        req = request.get_json()
+        req["ouvert"] = int(req["ouvert"]) if req["ouvert"] != "" else ""
+        req["deblaye"] = int(req["deblaye"]) if req["deblaye"] != "" else ""
+        req["arrondissement_id"] = (
+            int(req["arrondissement_id"])
+            if req["arrondissement_id"] != ""
+            else ""
+        )
+
+        # if req["ouvert"] is not None and req["deblaye"] is not None and req["arrondissement_id"] is not None:
+        #     req["ouvert"] = int(req["ouvert"])
+        #     req["deblaye"] = int(req["deblaye"])
+        #     req["arrondissement_id"] = int(req["arrondissement_id"])
+        # else:
+        #     req["ouvert"] = req["ouvert"]
+        #     req["deblaye"] =  req["deblaye"]
+        #     req["arrondissement_id"] =  req["arrondissement_id"]
+        # req["deblaye"] = int(req["deblaye"])
+        # req["arrondissement_id"] = int(req["arrondissement_id"])
+        validate(instance=req, schema=update_playground_slide_schema)
         playground_slide = Glissade.query.get(id)
-        playground_slide.nom = request.json["nom"]
-        playground_slide.arrondissement_id = request.json["arrondissement_id"]
-        playground_slide.ouvert = request.json["ouvert"]
-        playground_slide.deblaye = request.json["deblaye"]
-        playground_slide.condition = request.json["condition"]
+        playground_slide.nom = req["nom"]
+        playground_slide.arrondissement_id = req["arrondissement_id"]
+        playground_slide.ouvert = req["ouvert"]
+        playground_slide.deblaye = req["deblaye"]
+        playground_slide.condition = req["condition"]
         db.session.commit()
         return playground_slide_schema.jsonify(playground_slide), 200
 

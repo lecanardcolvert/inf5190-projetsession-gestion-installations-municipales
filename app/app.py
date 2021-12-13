@@ -7,7 +7,6 @@ from flask import Flask, render_template, g
 # Custom modules
 import config
 from api.api import api
-from model.arrondissement import Arrondissement, ArrondissementModel
 from routes.router import router
 from utils.shared import db
 from utils.update_database import create_or_update_database
@@ -53,19 +52,6 @@ def update_database():
         g.LAST_DATABASE_ACTION = "UPDATE"
         create_or_update_database()
         print(" * UPDATE FINISHED")
-
-
-@app.route("/subscribe", methods=["GET"])
-def subscribe():
-    borough_list = Arrondissement.query.all()
-    borough_model = ArrondissementModel(many=True)
-    serialized_boroughs = borough_model.dump(borough_list)
-    return render_template("subscribe.html", boroughs=serialized_boroughs)
-
-
-@app.route("/subscribe-success", methods=["GET"])
-def subscribe_success():
-    return render_template("subscribe-success.html")
 
 
 @app.errorhandler(404)
