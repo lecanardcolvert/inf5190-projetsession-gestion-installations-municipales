@@ -124,8 +124,23 @@ Ou sinon, vous modifiez la cronjob pour lancer la mise à jour chaque minute. C'
 Cette fonctionnalité consiste à générer la doc de l'API
 Pour tester cette fonctionnalité, il faut:
 
-1. Lancer l'application avec `make run`
-2. Dans votre fureteur, il faut se rendre à l'adresse `http://<ip_de_votre_machine_vagrant>:5000/doc`3. Fin du scénario de test
+1. S'assurer d'avoir Raml2html sur votre machine. C'est programme permettant de
+   générer automatiquement un fichier HTML de présentation pour un fichier RAML.
+   Il faut l'installer avec nodejs
+
+   ```sh
+   npm i -g raml2html
+   ```
+   Pour plus d’information : [Dépôt officiel](https://github.com/raml2html/raml2html)
+
+2. Générer la documentation avec la commande:
+   ```sh
+   raml2html app/api/api.raml -o app/templates/api-doc.html
+   ```
+
+3. Lancer l'application avec `make run`
+4. Dans votre fureteur, il faut se rendre à l'adresse `http://<ip_de_votre_machine_vagrant>:5000/doc`
+5. Fin du scénario de test
 
 ## Fonctionnalités A4 <a name = "A4"></a>
 
