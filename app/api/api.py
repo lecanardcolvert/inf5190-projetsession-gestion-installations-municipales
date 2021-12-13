@@ -141,14 +141,6 @@ def give_validation_error(e):
     )
 
 
-@api.route("/arrondissements", methods=["GET"])
-def boroughs():
-    borough_list = Arrondissement.query.all()
-    borough_model = ArrondissementModel(many=True)
-    serialized_boroughs = borough_model.dump(borough_list)
-    return jsonify(serialized_boroughs)
-
-
 @api.route("/abonnement", methods=["POST"])
 def subscribe():
     """
