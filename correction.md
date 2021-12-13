@@ -307,11 +307,23 @@ Pour tester cette fonctionnalité, il faut
 2. Faire une recherche par nom
 3. Pour supprimer une installation, il suffit de cliquer sur le bouton supprimer.
 4. Pour modifier une installation, il suffit de cliquer sur le bouton edit.
-5. Pour vérifier les résultats, il suffit de refaire une nouvelle recherche.
+5. Remplisser le formulaire pour modifier l'installation
+6. Pour vérifier les résultats, il suffit de refaire une nouvelle recherche.
 
 ## Fonctionnalités D4 <a name = "D4"></a>
 
 > Auteur: Sally Junior Jean Axel, SALLY (SALS20029908)
+
+Pour tester cette fonctionnalité, il faut:
+
+1. Définir les identifiants à autoriser dans la console
+  ```sh
+  export USERNAME="Jackie"
+  export PASSWORD="4Chan"
+  ```
+2. faites les étapes 2 à 6 de [D3](#D4).
+3. Votre navigateur vous demandera de vous connecter
+4. Il faut entrer les identifiants de l'étape 1 sinon vous aurez un statut 401
 
 ## Fonctionnalités F1 <a name = "F1"></a>
 
