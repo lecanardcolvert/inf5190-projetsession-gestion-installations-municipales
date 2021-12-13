@@ -4,6 +4,8 @@ from model.arrondissement import Arrondissement, ArrondissementModel
 from model.glissade import Glissade
 from model.patinoire import Patinoire
 from model.installation_aquatique import InstallationAquatique
+from utils.utils import login_required
+import config
 
 router = Blueprint("router", __name__)
 
@@ -32,6 +34,7 @@ def subscribe_success():
 
 
 @router.route("/installations/playground-slides/<id>/edit", methods=["GET"])
+@login_required
 def edit_playgroud_slide(id):
     borough_list = Arrondissement.query.all()
     borough_model = ArrondissementModel(many=True)
@@ -49,6 +52,7 @@ def edit_playgroud_slide(id):
 
 
 @router.route("/installations/ice-rinks/<id>/edit", methods=["GET"])
+@login_required
 def edit_ice_rink(id):
     borough_list = Arrondissement.query.all()
     borough_model = ArrondissementModel(many=True)
@@ -68,6 +72,7 @@ def edit_ice_rink(id):
 
 
 @router.route("/installations/aquatics/<id>/edit", methods=["GET"])
+@login_required
 def edit_aquatic_installation(id):
     borough_list = Arrondissement.query.all()
     borough_model = ArrondissementModel(many=True)

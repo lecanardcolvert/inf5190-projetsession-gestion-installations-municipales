@@ -22,6 +22,10 @@ SUBJECT = mail["subject"]
 USER_MAIL = os.environ.get("INF5190_SERVER_MAIL")
 MAIL_PASSWORD = os.environ.get("INF5190_MAIL_SERVER_PASSWORD")
 
+# Basic Auth
+USERNAME = os.environ.get("USERNAME")
+PASSWORD = os.environ.get("PASSWORD")
+
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + DB_PATH

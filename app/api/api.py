@@ -25,6 +25,7 @@ from schemas.schemas import (
     update_aquatic_installation_schema,
 )
 from utils.shared import db
+from utils.utils import login_required
 
 api = Blueprint("api", __name__, url_prefix="/api/v1")
 playground_slide_schema = GlissadeModel()
@@ -135,6 +136,32 @@ def _validate_json(schema_filename, json_data):
 #         return decorated
 #
 #     return inner_function
+def ok_user_and_password(username, password):
+    return (
+        username == config.config["USERNAME"]
+        and password == config.config["PASSWORD"]
+    )
+
+
+def authenticate():
+    message = {"message": "Authenticate."}
+    resp = jsonify(message)
+
+    resp.status_code = 401
+    resp.headers["WWW-Authenticate"] = 'Basic realm="Main"'
+
+    return resp
+
+
+def requires_authorization(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not ok_user_and_password(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+
+    return decorated
 
 
 @api.app_errorhandler(ValidationError)
@@ -363,6 +390,7 @@ def facility_name_search():
 
 
 @api.route("/installations/playground-slides/<id>", methods=["PUT"])
+@login_required
 def update_playground_slide(id):
     """
     Update a playground_slide
@@ -416,6 +444,7 @@ def update_playground_slide(id):
 
 
 @api.route("/installations/ice-rinks/<id>", methods=["PUT"])
+@login_required
 def update_ice_rink(id):
     """
     Update a ice_rink
@@ -452,6 +481,7 @@ def update_ice_rink(id):
 
 
 @api.route("/installations/aquatics/<id>", methods=["PUT"])
+@login_required
 def update_aquatic_installation(id):
     """
     Update a aquatic_installation
@@ -492,6 +522,7 @@ def update_aquatic_installation(id):
 
 
 @api.route("/installations/playground-slides/<id>", methods=["DELETE"])
+@login_required
 def delete_playground_slide(id):
     """
     Delete a playground_slide
@@ -521,6 +552,7 @@ def delete_playground_slide(id):
 
 
 @api.route("/installations/aquatics/<id>", methods=["DELETE"])
+@login_required
 def delete_aquatic_installation(id):
     """
     Delete a aquatic_installation
@@ -550,6 +582,7 @@ def delete_aquatic_installation(id):
 
 
 @api.route("/installations/ice-rinks/<id>", methods=["DELETE"])
+@login_required
 def delete_ice_rink(id):
     """
     Delete an ice rink

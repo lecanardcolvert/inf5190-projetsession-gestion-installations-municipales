@@ -1,4 +1,36 @@
+import config
 import re
+import base64
+from flask import request, Response
+from functools import wraps
+
+
+def check(authorization_header):
+    username = config.USERNAME
+    password = config.PASSWORD
+    base64_str = (
+        base64.b64encode(("%s:%s" % (username, password)).encode())
+        .decode()
+        .strip()
+    )
+    encoded_uname_pass = authorization_header.split()[-1]
+    if encoded_uname_pass == base64_str:
+        return True
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        authorization_header = request.headers.get("Authorization")
+        if authorization_header and check(authorization_header):
+            return f(*args, **kwargs)
+        else:
+            resp = Response()
+            resp.headers["WWW-Authenticate"] = "Basic"
+            return resp, 401
+        return f(*args, **kwargs)
+
+    return decorated
 
 
 def parse_integer(field):
