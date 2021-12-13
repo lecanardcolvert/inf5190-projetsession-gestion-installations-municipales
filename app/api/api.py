@@ -381,3 +381,32 @@ def update_playground_slide(id):
         playground_slide.condition = request.json["condition"]
         db.session.commit()
         return playground_slide_schema.jsonify(playground_slide), 200
+
+
+@api.route("/installations/glissades/<id>", methods=["DELETE"])
+def delete_playground_slide(id):
+    """
+    Delete a playground_slide
+    keyword arguments:
+    id -- the id of the playground slide
+    """
+
+    query = Glissade.query.filter(Glissade.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this playground_slide",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        playground_slide = Glissade.query.get(id)
+        db.session.delete(playground_slide)
+        db.session.commit()
+        return playground_slide_schema.jsonify(playground_slide), 204

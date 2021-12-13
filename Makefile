@@ -7,6 +7,6 @@ checkstyle:
 	pycodestyle app/ --exclude=.git,.venv
 
 release:
-	zip -r HAMA12128907_SALS20029908.zip . -x .\* app/__pycache__/\* app/.venv/\*
+	zip -r HAMA12128907_SALS20029908.zip . -x .\*  app/.venv/\* \*/__pycache__/\* \*/\*.log
 
 .PHONY: run release
