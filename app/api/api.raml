@@ -413,3 +413,58 @@ documentation:
                 </installations>
         500:
           description: Une erreur interne est survenue. Elle a été envoyée à l'équipe de développement.
+  get:
+    description: Retourne les noms de toutes les installations, en ordre alphabétique.
+    responses:
+      200:
+        description: La liste des noms a été correctement envoyée.
+        body:
+          application/json:
+            type: array
+            example: |
+              {[
+                "Saint-Jean-Baptiste",
+                "Centre sportif St-Charles",
+                "Parc Normand Dawe",
+                "Parc Beaulac",
+                "Parc Cooney"
+              ]}
+      500:
+        description: Une erreur interne est survenue. Elle a été envoyée à l'équipe de développement.
+/installations-recherche-nom:
+  get:
+    description: Retourne la liste des installations selon un critère par nom.
+    queryParameters:
+      nom:
+        description: Une chaìne de caractères qui représente le nom de l'installation
+        displayName: Nom
+        type: string
+        required: false
+        example: Centre Rosemont
+    responses:
+      200:
+        description: La liste des installations a été correctement envoyée.
+        body:
+          application/json:
+            type: Installation
+            example: |
+              {
+                  "glissades":[{
+                      "id":3,
+                      "nom":"Glissade, Parc Arthur-Therrien",
+                      "arrondissement":{
+                          "id":16,
+                          "nom":"Verdun",
+                          "cle":"ver",
+                          "date_maj":"2021-11-15T12:18:10"
+                      },
+                      "ouvert":0,
+                      "deblaye":0,
+                      "condition":"N/A"
+                      }
+                  ],
+                  "installations_aquatiques":[],
+                  "patinoires":[]
+              }
+      500:
+        description: Une erreur interne est survenue. Elle a été envoyée à l'équipe de développement.
