@@ -342,7 +342,8 @@ def notify_on_twitter(new_installations):
 
 def notify_subscribers_start(new_facilities):
     """
-    Start the process of notifying the subscribers about new facilities located in the boroughs they follow.
+    Start the process of notifying the subscribers about new facilities
+    located in the boroughs they follow.
     The process starts only when the database is updated.
 
     :param new_facilities: A list of the new facilities added to the database.
@@ -354,7 +355,8 @@ def notify_subscribers_start(new_facilities):
 
 def notify_subscribers(new_facility):
     """
-    Search the database for subscribers who follow the borough of a new facility added in the database, then send them
+    Search the database for subscribers who follow the borough of a new
+    facility added in the database, then send them
     an email.
 
     :param new_facility: The new facility
@@ -369,7 +371,8 @@ def notify_subscribers(new_facility):
 
 def notify_subscriber_by_mail(subscriber, facility):
     """
-    Send an email to a subscriber about a new facility added in a borough he follow.
+    Send an email to a subscriber about a new facility added in a borough
+    he follow.
 
     :param subscriber: The subscriber to send the email
     :param facility: The facility to be mentioned in the email
