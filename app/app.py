@@ -46,6 +46,13 @@ with app.app_context():
         print(" * CREATION FINISHED")
 
 
+def update_database():
+    with app.app_context():
+        print(" * UPDATING DATABASE")
+        create_or_update_database()
+        print(" * UPDATE FINISHED")
+
+
 @app.route("/abonnement", methods=["GET"])
 def subscribe():
     borough_list = Arrondissement.query.all()
@@ -57,13 +64,6 @@ def subscribe():
 @app.route("/abonnement-merci", methods=["GET"])
 def subscribe_success():
     return render_template("subscribe-success.html")
-
-
-def update_database():
-    with app.app_context():
-        print(" * UPDATING DATABASE")
-        create_or_update_database()
-        print(" * UPDATE FINISHED")
 
 
 @app.errorhandler(404)
