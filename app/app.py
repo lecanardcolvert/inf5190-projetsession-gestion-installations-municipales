@@ -2,12 +2,11 @@
 import atexit
 import os
 from apscheduler.schedulers.background import BackgroundScheduler
-from flask import Flask, render_template
+from flask import Flask, render_template, g
 
 # Custom modules
+import config
 from api.api import api
-from config import Config, DB_PATH
-from flask import g
 from model.arrondissement import Arrondissement, ArrondissementModel
 from routes.router import router
 from utils.shared import db
@@ -15,7 +14,7 @@ from utils.update_database import create_or_update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
-app.config.from_object(Config)
+app.config.from_object(config.config["development"])
 app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
 
@@ -25,7 +24,7 @@ update_job.add_job(
     lambda: update_database(),
     "cron",
     day="*",
-    hour="00",
+    hour="0",
     minute="00",
 )
 update_job.start()
@@ -40,7 +39,7 @@ app.register_blueprint(router)
 
 # Create database if it doesn't exist yet
 with app.app_context():
-    if not os.path.isfile(DB_PATH):
+    if not os.path.isfile(config.DB_PATH):
         print(" * CREATING DATABASE")
         g.LAST_DATABASE_ACTION = "CREATE"
         db.create_all()
@@ -56,17 +55,17 @@ def update_database():
         print(" * UPDATE FINISHED")
 
 
-@app.route('/abonnement', methods=['GET'])
+@app.route("/abonnement", methods=["GET"])
 def subscribe():
     borough_list = Arrondissement.query.all()
     borough_model = ArrondissementModel(many=True)
     serialized_boroughs = borough_model.dump(borough_list)
-    return render_template('subscribe.html', boroughs=serialized_boroughs)
+    return render_template("subscribe.html", boroughs=serialized_boroughs)
 
 
-@app.route('/abonnement-merci', methods=['GET'])
+@app.route("/abonnement-merci", methods=["GET"])
 def subscribe_success():
-    return render_template('subscribe-success.html')
+    return render_template("subscribe-success.html")
 
 
 @app.errorhandler(404)
