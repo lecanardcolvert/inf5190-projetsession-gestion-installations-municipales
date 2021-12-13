@@ -8,16 +8,18 @@ from io import StringIO
 
 # Custom modules
 import config
+from flask import g, render_template
+from model.glissade import Glissade
+from model.subscriber import Subscriber
 from utils.shared import db
+from model.patinoire import Patinoire
+from model.arrondissement import Arrondissement
+from model.installation_aquatique import InstallationAquatique
 from utils.utils import parse_integer
 from utils.utils import reformat_ince_rink_xml
 from utils.utils import trim_space_in_name
 from utils.sender import send_mail
 from utils.sender import send_tweet
-from model.patinoire import Patinoire
-from model.arrondissement import Arrondissement
-from model.installation_aquatique import InstallationAquatique
-from model.glissade import Glissade
 
 # List of new installations
 new_installations = []
@@ -121,6 +123,7 @@ def insert_ice_rinks(ice_rinks_list, arrondissement_id):
             new_installations.append(ice_rink.get_name())
     db.session.add_all(ice_rink_list)
     db.session.commit()
+    notify_subscribers_start(ice_rink_list)
 
 
 def update_ice_rink(query, ice_rink_info):
@@ -174,6 +177,7 @@ def insert_playground_slides(playground_slides_raw_xml, new_arrondissements):
             new_installations.append(playground_slide.get_name())
     db.session.add_all(playground_slide_list)
     db.session.commit()
+    notify_subscribers_start(playground_slide_list)
 
 
 def update_arrondissement(playground_slide, new_arrondissements):
@@ -256,6 +260,7 @@ def insert_aquatic_installations(
             new_installations.append(aquatic_installation.get_name())
     db.session.add_all(piscine_list)
     db.session.commit()
+    notify_subscribers_start(piscine_list)
 
 
 def get_arrondissement(row, new_arrondissements):
@@ -332,4 +337,50 @@ def notify_on_twitter(new_installations):
         print(" * Publishing updates result on Twitter")
         send_tweet(new_installations)
     else:
-        print(" * No new installations. Tweeting aborted")
+        print("No new installations. Sending email aborted")
+
+
+def notify_subscribers_start(new_facilities):
+    """
+    Start the process of notifying the subscribers about new facilities located in the boroughs they follow.
+    The process starts only when the database is updated.
+
+    :param new_facilities: A list of the new facilities added to the database.
+    """
+    if g.LAST_DATABASE_ACTION == "UPDATE":
+        for facility in new_facilities:
+            notify_subscribers(facility)
+
+
+def notify_subscribers(new_facility):
+    """
+    Search the database for subscribers who follow the borough of a new facility added in the database, then send them
+    an email.
+
+    :param new_facility: The new facility
+    """
+    borough_id = new_facility.arrondissement_id
+    subscribers = Subscriber.query.all()
+    for subscriber in subscribers:
+        for borough in subscriber.boroughs_to_follow:
+            if borough == borough_id:
+                notify_subscriber_by_mail(subscriber, new_facility)
+
+
+def notify_subscriber_by_mail(subscriber, facility):
+    """
+    Send an email to a subscriber about a new facility added in a borough he follow.
+
+    :param subscriber: The subscriber to send the email
+    :param facility: The facility to be mentioned in the email
+    """
+    new_facility_borough = Arrondissement.query.filter(
+        Arrondissement.id == facility.arrondissement_id
+    ).first()
+    mail_body = render_template(
+        "new_facility_in_borough_email.html",
+        subscriber=subscriber,
+        facility=facility,
+        borough=new_facility_borough,
+    )
+    send_mail(subscriber.email, "Nouvelle installation disponible", mail_body)

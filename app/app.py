@@ -1,8 +1,8 @@
 # Native and installed modules
 import atexit
 import os
-from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, render_template, g
 
 # Custom modules
 import config
@@ -41,6 +41,7 @@ app.register_blueprint(router)
 with app.app_context():
     if not os.path.isfile(config.DB_PATH):
         print(" * CREATING DATABASE")
+        g.LAST_DATABASE_ACTION = "CREATE"
         db.create_all()
         create_or_update_database()
         print(" * CREATION FINISHED")
@@ -49,6 +50,7 @@ with app.app_context():
 def update_database():
     with app.app_context():
         print(" * UPDATING DATABASE")
+        g.LAST_DATABASE_ACTION = "UPDATE"
         create_or_update_database()
         print(" * UPDATE FINISHED")
 
