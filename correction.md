@@ -124,8 +124,23 @@ Ou sinon, vous modifiez la cronjob pour lancer la mise à jour chaque minute. C'
 Cette fonctionnalité consiste à générer la doc de l'API
 Pour tester cette fonctionnalité, il faut:
 
-1. Lancer l'application avec `make run`
-2. Dans votre fureteur, il faut se rendre à l'adresse `http://<ip_de_votre_machine_vagrant>:5000/doc`3. Fin du scénario de test
+1. S'assurer d'avoir Raml2html sur votre machine. C'est programme permettant de
+   générer automatiquement un fichier HTML de présentation pour un fichier RAML.
+   Il faut l'installer avec nodejs
+
+   ```sh
+   npm i -g raml2html
+   ```
+   Pour plus d’information : [Dépôt officiel](https://github.com/raml2html/raml2html)
+
+2. Générer la documentation avec la commande:
+   ```sh
+   raml2html app/api/api.raml -o app/templates/api-doc.html
+   ```
+
+3. Lancer l'application avec `make run`
+4. Dans votre fureteur, il faut se rendre à l'adresse `http://<ip_de_votre_machine_vagrant>:5000/doc`
+5. Fin du scénario de test
 
 ## Fonctionnalités A4 <a name = "A4"></a>
 
@@ -284,13 +299,33 @@ que vous recherchez.
 
 ## Fonctionnalités D3 <a name = "D3"></a>
 
-> Auteur:
+> Auteur: Sally Junior Jean Axel, SALLY (SALS20029908)
 
-## Fonctionnalités D4 <a name = "D3"></a>
+Pour tester cette fonctionnalité, il faut
 
-> Auteur:
+1. Lancer l'application
+2. Faire une recherche par nom
+3. Pour supprimer une installation, il suffit de cliquer sur le bouton supprimer.
+4. Pour modifier une installation, il suffit de cliquer sur le bouton edit.
+5. Remplisser le formulaire pour modifier l'installation
+6. Pour vérifier les résultats, il suffit de refaire une nouvelle recherche.
 
-## Fonctionnalités F1 <a name = "D3"></a>
+## Fonctionnalités D4 <a name = "D4"></a>
+
+> Auteur: Sally Junior Jean Axel, SALLY (SALS20029908)
+
+Pour tester cette fonctionnalité, il faut:
+
+1. Définir les identifiants à autoriser dans la console
+  ```sh
+  export USERNAME="Jackie"
+  export PASSWORD="4Chan"
+  ```
+2. faites les étapes 2 à 6 de [D3](#D4).
+3. Votre navigateur vous demandera de vous connecter
+4. Il faut entrer les identifiants de l'étape 1 sinon vous aurez un statut 401
+
+## Fonctionnalités F1 <a name = "F1"></a>
 
 > Auteur: H. Bourdeau, Alexandre (HAMA12128907)
 

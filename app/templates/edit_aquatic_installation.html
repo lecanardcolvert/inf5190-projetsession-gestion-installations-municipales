@@ -1,0 +1,52 @@
+
+{% extends "base.html" %}
+
+{% block title %}Modifier cette installation aquatique{% endblock %}
+
+{% block content %}
+
+
+<div class="mb-4">
+    <form class="needs-validation" action="/api/v1/installations/aquatics/{{id}}" method="put" id="subscribe-form">
+
+        <div class="mb-3">
+          <label class="form-label" for="nom">Nom</label>
+            <input class="form-control" type="text" id="nom" name="nom" aria-describedby="title-help"placeholder="{{nom}}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="arrondissement_id">Arrondissements</label>
+            <select class="form-select" id="arrondissement_id" name="arrondissement_id" >
+                {% for borough in boroughs %}
+                <option value="{{ borough.id }}">{{ borough.nom }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="type">Type</label>
+            <input class="form-control" type="text" id="type" name="type" aria-describedby="title-help" placeholder="{{type}}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="adresse">Adresse</label>
+            <input class="form-control" type="text" id="adresse" name="adresse" aria-describedby="title-help" placeholder="{{adresse}}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="propriete">Propriété</label>
+            <input class="form-control" type="text" id="propriete" name="propriete" aria-describedby="title-help" placeholder="{{propriete}}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="gestion">Gestion</label>
+            <input class="form-control" type="text" id="gestion" name="gestion" aria-describedby="title-help" placeholder="{{gestion}}" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="equipement">Equipement</label>
+            <input class="form-control" type="text" id="equipement" name="equipement" aria-describedby="title-help" placeholder="{{equipement}}" required>
+        </div>
+        <button class="validate btn btn-primary" onclick='validateAquaticInstallation({{id}})'>Validate</button>
+    </form>
+</div>
+
+<div class="alert alert-danger" role="alert" style="display:none;" id="subscribe-error"></div>
+
+{% endblock %}

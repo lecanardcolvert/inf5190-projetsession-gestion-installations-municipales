@@ -19,11 +19,18 @@ from model.installation_aquatique import (
 from model.glissade import Glissade, GlissadeModel
 from model.patinoire import Patinoire, PatinoireModel
 from model.subscriber import Subscriber, SubscriberModel
-from schemas.schemas import update_playground_slide_schema
+from schemas.schemas import (
+    update_playground_slide_schema,
+    update_ice_rink_schema,
+    update_aquatic_installation_schema,
+)
 from utils.shared import db
+from utils.utils import login_required
 
 api = Blueprint("api", __name__, url_prefix="/api/v1")
 playground_slide_schema = GlissadeModel()
+aquatic_installation_schema = InstallationAquatiqueModel()
+ice_rink_schema = PatinoireModel()
 
 
 def _get_json_schema():
@@ -129,6 +136,32 @@ def _validate_json(schema_filename, json_data):
 #         return decorated
 #
 #     return inner_function
+def ok_user_and_password(username, password):
+    return (
+        username == config.config["USERNAME"]
+        and password == config.config["PASSWORD"]
+    )
+
+
+def authenticate():
+    message = {"message": "Authenticate."}
+    resp = jsonify(message)
+
+    resp.status_code = 401
+    resp.headers["WWW-Authenticate"] = 'Basic realm="Main"'
+
+    return resp
+
+
+def requires_authorization(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not ok_user_and_password(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+
+    return decorated
 
 
 @api.app_errorhandler(ValidationError)
@@ -176,8 +209,10 @@ def subscribe():
             return (
                 jsonify(
                     {
-                        "error": "Une erreur est survenue lors de l'ajout dans"
-                        " la base de données."
+                        "error": {
+                            "message": "Une erreur est survenue lors de l'ajout dans"
+                            " la base de données."
+                        }
                     }
                 ),
                 500,
@@ -185,7 +220,13 @@ def subscribe():
 
     else:
         return (
-            jsonify({"error": "Les données fournies ne sont pas valides."}),
+            jsonify(
+                {
+                    "error": {
+                        "message": "Les données fournies ne sont pas valides."
+                    }
+                }
+            ),
             400,
         )
 
@@ -263,7 +304,7 @@ def facilities_updated_2021():
     )
 
 
-@api.route("/installations-maj-2021.xml", methods=["GET"])
+@api.route("/installations/xml", methods=["GET"])
 def facilities_updated_2021_xml():
     """
     Return the list of facilities updated in 2021 in the xml format.
@@ -290,7 +331,7 @@ def facilities_updated_2021_xml():
     return Response(pretty_xml_data, mimetype="application/xml")
 
 
-@api.route("/installations-noms", methods=["GET"])
+@api.route("/installations/names", methods=["GET"])
 def facility_names():
     """
     Return the list of facility names in the json format, in alphabetical
@@ -312,7 +353,7 @@ def facility_names():
     return jsonify(sorted_facility_names)
 
 
-@api.route("/installations-recherche-nom", methods=["GET"])
+@api.route("/installations/names/search", methods=["GET"])
 def facility_name_search():
     """
     Return the list of facilities in the json format.
@@ -348,8 +389,8 @@ def facility_name_search():
     )
 
 
-@api.route("/installations/glissades/<id>", methods=["PUT"])
-# @validate_schema(update_playground_slide_schema)
+@api.route("/installations/playground-slides/<id>", methods=["PUT"])
+@login_required
 def update_playground_slide(id):
     """
     Update a playground_slide
@@ -372,18 +413,116 @@ def update_playground_slide(id):
             404,
         )
     else:
-        validate(instance=request.json, schema=update_playground_slide_schema)
+        req = request.get_json()
+        req["ouvert"] = int(req["ouvert"]) if req["ouvert"] != "" else ""
+        req["deblaye"] = int(req["deblaye"]) if req["deblaye"] != "" else ""
+        req["arrondissement_id"] = (
+            int(req["arrondissement_id"])
+            if req["arrondissement_id"] != ""
+            else ""
+        )
+
+        # if req["ouvert"] is not None and req["deblaye"] is not None and req["arrondissement_id"] is not None:
+        #     req["ouvert"] = int(req["ouvert"])
+        #     req["deblaye"] = int(req["deblaye"])
+        #     req["arrondissement_id"] = int(req["arrondissement_id"])
+        # else:
+        #     req["ouvert"] = req["ouvert"]
+        #     req["deblaye"] =  req["deblaye"]
+        #     req["arrondissement_id"] =  req["arrondissement_id"]
+        # req["deblaye"] = int(req["deblaye"])
+        # req["arrondissement_id"] = int(req["arrondissement_id"])
+        validate(instance=req, schema=update_playground_slide_schema)
         playground_slide = Glissade.query.get(id)
-        playground_slide.nom = request.json["nom"]
-        playground_slide.arrondissement_id = request.json["arrondissement_id"]
-        playground_slide.ouvert = request.json["ouvert"]
-        playground_slide.deblaye = request.json["deblaye"]
-        playground_slide.condition = request.json["condition"]
+        playground_slide.nom = req["nom"]
+        playground_slide.arrondissement_id = req["arrondissement_id"]
+        playground_slide.ouvert = req["ouvert"]
+        playground_slide.deblaye = req["deblaye"]
+        playground_slide.condition = req["condition"]
         db.session.commit()
         return playground_slide_schema.jsonify(playground_slide), 200
 
 
-@api.route("/installations/glissades/<id>", methods=["DELETE"])
+@api.route("/installations/ice-rinks/<id>", methods=["PUT"])
+@login_required
+def update_ice_rink(id):
+    """
+    Update a ice_rink
+    keyword arguments:
+    id -- the id of the ice rink
+    """
+
+    query = Patinoire.query.filter(Patinoire.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this ice_rink",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        validate(instance=request.json, schema=update_ice_rink_schema)
+        ice_rink = Patinoire.query.get(id)
+        ice_rink.nom = request.json["nom"]
+        ice_rink.arrondissement_id = request.json["arrondissement_id"]
+        ice_rink.date_heure = request.json["date_heure"]
+        ice_rink.ouvert = request.json["ouvert"]
+        ice_rink.deblaye = request.json["deblaye"]
+        ice_rink.arrose = request.json["arrose"]
+        ice_rink.resurface = request.json["resurface"]
+        db.session.commit()
+        return ice_rink_schema.jsonify(ice_rink), 200
+
+
+@api.route("/installations/aquatics/<id>", methods=["PUT"])
+@login_required
+def update_aquatic_installation(id):
+    """
+    Update a aquatic_installation
+    keyword arguments:
+    id -- the id of the aquatic installation
+    """
+
+    query = InstallationAquatique.query.filter(InstallationAquatique.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this aquatic_installation",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        validate(
+            instance=request.json, schema=update_aquatic_installation_schema
+        )
+        aquatic_installation = InstallationAquatique.query.get(id)
+        aquatic_installation.nom = request.json["nom"]
+        aquatic_installation.arrondissement_id = request.json[
+            "arrondissement_id"
+        ]
+        aquatic_installation.type = request.json["type"]
+        aquatic_installation.adresse = request.json["adresse"]
+        aquatic_installation.propriete = request.json["propriete"]
+        aquatic_installation.gestion = request.json["gestion"]
+        aquatic_installation.equipement = request.json["equipement"]
+        db.session.commit()
+        return aquatic_installation_schema.jsonify(aquatic_installation), 200
+
+
+@api.route("/installations/playground-slides/<id>", methods=["DELETE"])
+@login_required
 def delete_playground_slide(id):
     """
     Delete a playground_slide
@@ -410,3 +549,63 @@ def delete_playground_slide(id):
         db.session.delete(playground_slide)
         db.session.commit()
         return playground_slide_schema.jsonify(playground_slide), 204
+
+
+@api.route("/installations/aquatics/<id>", methods=["DELETE"])
+@login_required
+def delete_aquatic_installation(id):
+    """
+    Delete a aquatic_installation
+    keyword arguments:
+    id -- the id of the aquatic installation
+    """
+
+    query = InstallationAquatique.query.filter(InstallationAquatique.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this aquatic installation",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        aquatic_installation = InstallationAquatique.query.get(id)
+        db.session.delete(aquatic_installation)
+        db.session.commit()
+        return aquatic_installation_schema.jsonify(aquatic_installation), 204
+
+
+@api.route("/installations/ice-rinks/<id>", methods=["DELETE"])
+@login_required
+def delete_ice_rink(id):
+    """
+    Delete an ice rink
+    keyword arguments:
+    id -- the id of the ice rink
+    """
+
+    query = Patinoire.query.filter(Patinoire.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this ice rink",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        ice_rink = Patinoire.query.get(id)
+        db.session.delete(ice_rink)
+        db.session.commit()
+        return ice_rink_schema.jsonify(ice_rink), 204

@@ -5,7 +5,7 @@ $(document).ready(function() {
   function fill_name_dropdown_menu() {
     var name = $("#facility-name").val();
     var method = 'get';
-    var url = '/api/v1/installations-noms';
+    var url = '/api/v1/installations/names';
 
     var xhr = new XMLHttpRequest();
     xhr.open(method, url, true);

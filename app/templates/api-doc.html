@@ -1,0 +1,493 @@
+<!DOCTYPE HTML><html><head><title>API du projet de session INF5190</title><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="generator" content="https://github.com/raml2html/raml2html 7.8.0"><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/default.min.css"><script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script><script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script><script type="text/javascript">
+      $(document).ready(function() {
+  $('.page-header pre code, .top-resource-description pre code, .modal-body pre code').each(function(i, block) {
+    hljs.highlightBlock(block);
+  });
+
+  $('[data-toggle]').click(function() {
+    var selector = $(this).data('target') + ' pre code';
+    $(selector).each(function(i, block) {
+      hljs.highlightBlock(block);
+    });
+  });
+
+  // open modal on hashes like #_action_get
+  $(window).bind('hashchange', function(e) {
+    var anchor_id = document.location.hash.substr(1); //strip #
+    var element = $('#' + anchor_id);
+
+    // do we have such element + is it a modal?  --> show it
+    if (element.length && element.hasClass('modal')) {
+      element.modal('show');
+    }
+  });
+
+  // execute hashchange on first page load
+  $(window).trigger('hashchange');
+
+  // remove url fragment on modal hide
+  $('.modal').on('hidden.bs.modal', function() {
+    try {
+      if (history && history.replaceState) {
+          history.replaceState({}, '', '#');
+      }
+    } catch(e) {}
+  });
+});
+    </script><style>
+      .hljs {
+  background: transparent;
+}
+.parent {
+  color: #999;
+}
+.list-group-item > .badge {
+  float: none;
+  margin-right: 6px;
+}
+.panel-title > .methods {
+  float: right;
+}
+.badge {
+  border-radius: 0;
+  text-transform: uppercase;
+  width: 70px;
+  font-weight: normal;
+  color: #f3f3f6;
+  line-height: normal;
+}
+.badge_get {
+  background-color: #63a8e2;
+}
+.badge_post {
+  background-color: #6cbd7d;
+}
+.badge_put {
+  background-color: #22bac4;
+}
+.badge_delete {
+  background-color: #d26460;
+}
+.badge_patch {
+  background-color: #ccc444;
+}
+.list-group,
+.panel-group {
+  margin-bottom: 0;
+}
+.panel-group .panel+.panel-white {
+  margin-top: 0;
+}
+.panel-group .panel-white {
+  border-bottom: 1px solid #F5F5F5;
+  border-radius: 0;
+}
+.panel-white:last-child {
+  border-bottom-color: white;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+.panel-white .panel-heading {
+  background: white;
+}
+.tab-pane ul {
+  padding-left: 2em;
+}
+.tab-pane h1 {
+  font-size: 1.3em;
+}
+.tab-pane h2 {
+  font-size: 1.2em;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #ddd;
+}
+.tab-pane h3 {
+  font-size: 1.1em;
+}
+.tab-content {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+#sidebar {
+  margin-top: 30px;
+  padding-right: 5px;
+  overflow: auto;
+  height: 90%;
+}
+.top-resource-description {
+  border-bottom: 1px solid #ddd;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description {
+  border-bottom: 1px solid #fcfcfc;
+  background: #fcfcfc;
+  padding: 15px 15px 0 15px;
+  margin: -15px -15px 10px -15px;
+}
+.resource-description p:last-child {
+  margin: 0;
+}
+.list-group .badge {
+  float: left;
+}
+.method_description {
+  margin-left: 85px;
+}
+.method_description p:last-child {
+  margin: 0;
+}
+.list-group-item {
+  cursor: pointer;
+}
+.list-group-item:hover {
+  background-color: #f5f5f5;
+}
+pre code {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+.items {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.42857143;
+}
+.examples {
+  margin-left: 0.5em;
+}
+.resource-modal li > ul {
+  margin-bottom: 1em;
+}
+.required {
+  color: #f00;
+}
+    </style></head><body data-spy="scroll" data-target="#sidebar"><div class="container"><div class="row"><div class="col-md-9" role="main"><div class="page-header"><h1>API du projet de session INF5190 <small>version v1</small></h1><p>http://127.0.0.1/api</p><h3 id="accueil"><a href="#accueil">Accueil</a></h3><p>Bienvenue dans la documentation de l&#39;API du projet de session INF5190. Cette API vous permettra d&#39;obtenir une foule d&#39;infos sur les installations de la Ville de Montréal. N&#39;oubliez pas de préfixer "/api" dans vos requête. "Exemple: GET /api/v1/installations"</p></div><div class="panel panel-default"><div class="panel-heading"><h3 id="v1" class="panel-title">/v1</h3></div><div class="panel-body"><div class="panel-group"><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations"><span class="parent">/v1</span>/installations</a> <span class="methods"><a href="#v1_installations_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_v1_installations" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retourne la liste des installations</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/v1</span>/installations</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retourne la liste des installations</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_get_request" data-toggle="tab">Request</a></li><li><a href="#v1_installations_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_get_request"><h3>Query Parameters</h3><ul><li><strong>arrondissement</strong>: <em>(string)</em><p>Une chaìne de caractères qui représente le nom de l&#39;arrondissement</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>Verdun</code></pre></div></li></ul></div><div class="tab-pane" id="v1_installations_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La liste des installations a été correctement envoyée.</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Possible types</strong>:<ul><li><p><strong>Glissade</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement</strong>: <em><span class="required">required</span>(object)</em><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>cle</strong>: <em>(string)</em></li><li><strong>date_maj</strong>: <em>(datetime-only)</em></li></ul></li><li><strong>ouvert</strong>: <em>(boolean)</em></li><li><strong>deblaye</strong>: <em>(boolean)</em></li><li><strong>condition</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>InstallationAquatique</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>type</strong>: <em>(string)</em></li><li><strong>adresse</strong>: <em>(string)</em></li><li><strong>propriete</strong>: <em>(string)</em></li><li><strong>gestion</strong>: <em>(string)</em></li><li><strong>equipement</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>Patinoire</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>date_heure</strong>: <em><span class="required">required</span>(datetime-only)</em></li><li><strong>ouvert</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>deblaye</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>arrose</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>resurface</strong>: <em><span class="required">required</span>(boolean)</em></li></ul></div></li></ul></p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+    "glissades":[{
+        "id":3,
+        "nom":"Glissade, Parc Arthur-Therrien",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "ouvert":0,
+        "deblaye":0,
+        "condition":"N/A"
+        }
+    ],
+    "installations_aquatiques":[{
+        "id":3,
+        "nom":"Parc Normand Dawe",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "type":"Jeu d&#39;eau",
+        "adresse":"1 060, Rue Woodland",
+        "propriete":"Municipale",
+        "gestion":"Municipale",
+        "equipement":""
+        }
+    ],
+    "patinoires":[{
+        "id":251,
+        "nom":"Glissade, Parc Arthur-Therrien ()",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "date_heure":"2021-11-15 12:18:10",
+        "ouvert":0,
+        "deblaye":0,
+        "arrose":0,
+        "resurface":0
+        }
+    ]
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne est survenue. Elle a été envoyée à l&#39;équipe de développement.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_playground_slides_id"><span class="parent">/v1/installations</span>/playground-slides/id</a> <span class="methods"><a href="#v1_installations_playground_slides_id_put"><span class="badge badge_put">put</span></a> <a href="#v1_installations_playground_slides_id_delete"><span class="badge badge_delete">delete</span></a></span></h4></div><div id="panel_v1_installations_playground_slides_id" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_playground_slides_id_put'" class="list-group-item"><span class="badge badge_put">put</span><div class="method_description"><p>Mise à jour d&#39;une glissade</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#v1_installations_playground_slides_id_delete'" class="list-group-item"><span class="badge badge_delete">delete</span><div class="method_description"><p>suppression d&#39;une glissade</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_playground_slides_id_put"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put</span> <span class="parent">/v1/installations</span>/playground-slides/id</h4></div><div class="modal-body"><div class="alert alert-info"><p>Mise à jour d&#39;une glissade</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_playground_slides_id_put_request" data-toggle="tab">Request</a></li><li><a href="#v1_installations_playground_slides_id_put_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_playground_slides_id_put_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>ouvert</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>deblaye</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>condition</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "nom": "Aire de glissade ,Don-Bosco",
+  "arrondissement_id": 12,
+  "ouvert": 1,
+  "deblaye": 0,
+  "condition": "N/A"
+}</code></pre></div></div><div class="tab-pane" id="v1_installations_playground_slides_id_put_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La mise à jour à réussi</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>ouvert</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>deblaye</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>condition</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+    "id": 1,
+    "nom": "Aire de glissade ,Don-Bosco",
+    "arrondissement": {
+        "id": 12,
+        "nom": "Rivière-des-Prairies-Pointe-aux-Trembles",
+        "cle": "rdp",
+        "date_maj": "2021-10-18T13:45:13"
+    },
+    "ouvert": 1,
+    "deblaye": 0,
+    "condition": "N/A"
+}
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>status</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+  "error": {
+      "code": "Bad Request",
+      "message": "&#39;arrondissement_id&#39; is a required property"
+  }
+}
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><p>Il n&#39;existe pas de glissade avec ce id.</p></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_playground_slides_id_delete"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete</span> <span class="parent">/v1/installations</span>/playground-slides/id</h4></div><div class="modal-body"><div class="alert alert-info"><p>suppression d&#39;une glissade</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_playground_slides_id_delete_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_playground_slides_id_delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2><p>La suppression est un succès</p><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><p>Il n&#39;existe pas de glissade avec ce id.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_aquatics_id"><span class="parent">/v1/installations</span>/aquatics/id</a> <span class="methods"><a href="#v1_installations_aquatics_id_put"><span class="badge badge_put">put</span></a> <a href="#v1_installations_aquatics_id_delete"><span class="badge badge_delete">delete</span></a></span></h4></div><div id="panel_v1_installations_aquatics_id" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_aquatics_id_put'" class="list-group-item"><span class="badge badge_put">put</span><div class="method_description"><p>Mise à jour d&#39;une installation aquatique</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#v1_installations_aquatics_id_delete'" class="list-group-item"><span class="badge badge_delete">delete</span><div class="method_description"><p>suppression d&#39;une installation aquatique</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_aquatics_id_put"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put</span> <span class="parent">/v1/installations</span>/aquatics/id</h4></div><div class="modal-body"><div class="alert alert-info"><p>Mise à jour d&#39;une installation aquatique</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_aquatics_id_put_request" data-toggle="tab">Request</a></li><li><a href="#v1_installations_aquatics_id_put_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_aquatics_id_put_request"><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>type</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>adresse</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>propriete</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>gestion</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>equipement</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "nom": "Parc Normand Dawe",
+  "arrondissement_id": 16,
+  "type": "Jeu d&#39;eau",
+  "adresse": "1 060, Rue Woodland",
+  "propriete": "Municipale",
+  "gestion": "Municipale",
+  "equipement": "d"
+}</code></pre></div></div><div class="tab-pane" id="v1_installations_aquatics_id_put_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La mise à jour à réussi</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>type</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>adresse</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>propriete</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>gestion</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>equipement</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+  "id": 62,
+  "nom": "Parc Normand Dawe",
+  "arrondissement_id": 16,
+  "type": "Jeu d&#39;eau",
+  "adresse": "1 060, Rue Woodland",
+  "propriete": "Municipale",
+  "gestion": "Municipale",
+  "equipement": "ddd"
+}
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>status</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+  "error": {
+      "code": "Bad Request",
+      "message": "&#39;arrondissement_id&#39; is a required property"
+  }
+}
+</code></pre></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_aquatics_id_delete"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete</span> <span class="parent">/v1/installations</span>/aquatics/id</h4></div><div class="modal-body"><div class="alert alert-info"><p>suppression d&#39;une installation aquatique</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_aquatics_id_delete_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_aquatics_id_delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2><p>La suppression est un succès</p><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><p>Il n&#39;existe pas de glissade avec ce id.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_ice_rinks_id"><span class="parent">/v1/installations</span>/ice-rinks/id</a> <span class="methods"><a href="#v1_installations_ice_rinks_id_put"><span class="badge badge_put">put</span></a> <a href="#v1_installations_ice_rinks_id_delete"><span class="badge badge_delete">delete</span></a></span></h4></div><div id="panel_v1_installations_ice_rinks_id" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_ice_rinks_id_put'" class="list-group-item"><span class="badge badge_put">put</span><div class="method_description"><p>Mise à jour d&#39;une glissade</p></div><div class="clearfix"></div></div><div onclick="window.location.href = '#v1_installations_ice_rinks_id_delete'" class="list-group-item"><span class="badge badge_delete">delete</span><div class="method_description"><p>suppression d&#39;une patinoire</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_ice_rinks_id_put"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_put">put</span> <span class="parent">/v1/installations</span>/ice-rinks/id</h4></div><div class="modal-body"><div class="alert alert-info"><p>Mise à jour d&#39;une glissade</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_ice_rinks_id_put_request" data-toggle="tab">Request</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_ice_rinks_id_put_request"><h3>Body</h3><p><strong>Media type</strong>: 200</p><p><strong>Type</strong>: any</p><p><strong>Media type</strong>: 400</p><p><strong>Type</strong>: any</p><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: NouveauPatinoire</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "nom": "Glissade, Parc Arthur-Therrien ()",
+  "arrondissement_id": 16,
+  "date_heure": "2021-1115 12:18:10",
+  "ouvert": 0
+}</code></pre></div></div></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_ice_rinks_id_delete"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_delete">delete</span> <span class="parent">/v1/installations</span>/ice-rinks/id</h4></div><div class="modal-body"><div class="alert alert-info"><p>suppression d&#39;une patinoire</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_ice_rinks_id_delete_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_ice_rinks_id_delete_response"><h2>HTTP status code <a href="http://httpstatus.es/204" target="_blank">204</a></h2><p>La suppression est un succès</p><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h2>HTTP status code <a href="http://httpstatus.es/404" target="_blank">404</a></h2><p>Il n&#39;existe pas de glissade avec ce id.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_names_search"><span class="parent">/v1/installations</span>/names/search</a> <span class="methods"><a href="#v1_installations_names_search_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_v1_installations_names_search" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_names_search_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retourne la liste des installations selon un critère par nom.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_names_search_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/v1/installations</span>/names/search</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retourne la liste des installations selon un critère par nom.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_names_search_get_request" data-toggle="tab">Request</a></li><li><a href="#v1_installations_names_search_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_names_search_get_request"><h3>Query Parameters</h3><ul><li><strong>nom</strong>: <em>(string)</em><p>Une chaìne de caractères qui représente le nom de l&#39;installation</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>Centre Rosemont</code></pre></div></li></ul></div><div class="tab-pane" id="v1_installations_names_search_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La liste des installations a été correctement envoyée.</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Possible types</strong>:<ul><li><p><strong>Glissade</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement</strong>: <em><span class="required">required</span>(object)</em><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>cle</strong>: <em>(string)</em></li><li><strong>date_maj</strong>: <em>(datetime-only)</em></li></ul></li><li><strong>ouvert</strong>: <em>(boolean)</em></li><li><strong>deblaye</strong>: <em>(boolean)</em></li><li><strong>condition</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>InstallationAquatique</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>type</strong>: <em>(string)</em></li><li><strong>adresse</strong>: <em>(string)</em></li><li><strong>propriete</strong>: <em>(string)</em></li><li><strong>gestion</strong>: <em>(string)</em></li><li><strong>equipement</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>Patinoire</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>date_heure</strong>: <em><span class="required">required</span>(datetime-only)</em></li><li><strong>ouvert</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>deblaye</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>arrose</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>resurface</strong>: <em><span class="required">required</span>(boolean)</em></li></ul></div></li></ul></p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+    "glissades":[{
+        "id":3,
+        "nom":"Glissade, Parc Arthur-Therrien",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "ouvert":0,
+        "deblaye":0,
+        "condition":"N/A"
+        }
+    ],
+    "installations_aquatiques":[],
+    "patinoires":[]
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne est survenue. Elle a été envoyée à l&#39;équipe de développement.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_xml"><span class="parent">/v1/installations</span>/xml</a> <span class="methods"><a href="#v1_installations_xml_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_v1_installations_xml" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_xml_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retourne la liste des installations mises à jour en 2021, au format XML. La liste est triée en ordre alphabétique.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_xml_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/v1/installations</span>/xml</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retourne la liste des installations mises à jour en 2021, au format XML. La liste est triée en ordre alphabétique.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_xml_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_xml_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La liste des installations a été correctement envoyée.</p><h3>Body</h3><p><strong>Media type</strong>: application/xml</p><p><strong>Possible types</strong>:<ul><li><p><strong>Glissade</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement</strong>: <em><span class="required">required</span>(object)</em><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>cle</strong>: <em>(string)</em></li><li><strong>date_maj</strong>: <em>(datetime-only)</em></li></ul></li><li><strong>ouvert</strong>: <em>(boolean)</em></li><li><strong>deblaye</strong>: <em>(boolean)</em></li><li><strong>condition</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>InstallationAquatique</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>type</strong>: <em>(string)</em></li><li><strong>adresse</strong>: <em>(string)</em></li><li><strong>propriete</strong>: <em>(string)</em></li><li><strong>gestion</strong>: <em>(string)</em></li><li><strong>equipement</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>Patinoire</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>date_heure</strong>: <em><span class="required">required</span>(datetime-only)</em></li><li><strong>ouvert</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>deblaye</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>arrose</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>resurface</strong>: <em><span class="required">required</span>(boolean)</em></li></ul></div></li></ul></p><p><strong>Example</strong>:</p><div class="examples"><pre><code>&lt;?xml version="1.0" ?&gt;
+&lt;installations&gt;
+  &lt;glissades&gt;
+    &lt;item&gt;
+        &lt;id&gt;1&lt;/id&gt;
+        &lt;nom&gt;Aire de glissade ,Don-Bosco&lt;/nom&gt;
+        &lt;arrondissement&gt;
+            &lt;id&gt;12&lt;/id&gt;
+            &lt;nom&gt;Rivière-des-Prairies-Pointe-aux-Trembles&lt;/nom&gt;
+            &lt;cle&gt;rdp&lt;/cle&gt;
+            &lt;date_maj&gt;2021-10-18T13:45:13&lt;/date_maj&gt;
+        &lt;/arrondissement&gt;
+        &lt;ouvert&gt;0&lt;/ouvert&gt;
+        &lt;deblaye&gt;0&lt;/deblaye&gt;
+        &lt;condition&gt;N/A&lt;/condition&gt;
+    &lt;/item&gt;
+    &lt;item&gt;
+        &lt;id&gt;4&lt;/id&gt;
+        &lt;nom&gt;Aire de glissade, Parc Confédération&lt;/nom&gt;
+        &lt;arrondissement&gt;
+            &lt;id&gt;2&lt;/id&gt;
+            &lt;nom&gt;Côte-des-Neiges-Notre-Dame-de-Grâce&lt;/nom&gt;
+            &lt;cle&gt;cdn&lt;/cle&gt;
+            &lt;date_maj&gt;2021-12-06T11:28:59&lt;/date_maj&gt;
+        &lt;/arrondissement&gt;
+        &lt;ouvert&gt;0&lt;/ouvert&gt;
+        &lt;deblaye&gt;0&lt;/deblaye&gt;
+        &lt;condition&gt;N/A&lt;/condition&gt;
+    &lt;/item&gt;
+  &lt;/glissades&gt;
+  &lt;installations_aquatiques&gt;
+    &lt;item&gt;
+        &lt;id&gt;54&lt;/id&gt;
+        &lt;nom&gt;Centre aquatique Rivières-des-Prairies&lt;/nom&gt;
+        &lt;arrondissement&gt;
+            &lt;id&gt;12&lt;/id&gt;
+            &lt;nom&gt;Rivière-des-Prairies-Pointe-aux-Trembles&lt;/nom&gt;
+            &lt;cle&gt;rdp&lt;/cle&gt;
+            &lt;date_maj&gt;2021-10-18T13:45:13&lt;/date_maj&gt;
+        &lt;/arrondissement&gt;
+        &lt;type&gt;Piscine intérieure&lt;/type&gt;
+        &lt;adresse&gt;12 515, Boulevard Rodolphe-Forget&lt;/adresse&gt;
+        &lt;propriete&gt;Municipale&lt;/propriete&gt;
+        &lt;gestion&gt;Municipale&lt;/gestion&gt;
+        &lt;equipement&gt;Complexe aquatique&lt;/equipement&gt;
+    &lt;/item&gt;
+    &lt;item&gt;
+        &lt;id&gt;165&lt;/id&gt;
+        &lt;nom&gt;Centre communautaire Notre-Dame-de-Grâce&lt;/nom&gt;
+        &lt;arrondissement&gt;
+            &lt;id&gt;2&lt;/id&gt;
+            &lt;nom&gt;Côte-des-Neiges-Notre-Dame-de-Grâce&lt;/nom&gt;
+            &lt;cle&gt;cdn&lt;/cle&gt;
+            &lt;date_maj&gt;2021-12-06T11:28:59&lt;/date_maj&gt;
+        &lt;/arrondissement&gt;
+        &lt;type&gt;Piscine intérieure&lt;/type&gt;
+        &lt;adresse&gt;5 311, Chemin de la Côte-Saint-Antoine&lt;/adresse&gt;
+        &lt;propriete&gt;Municipale&lt;/propriete&gt;
+        &lt;gestion&gt;Municipale&lt;/gestion&gt;
+        &lt;equipement&gt;Piscine récréative&lt;/equipement&gt;
+    &lt;/item&gt;
+  &lt;/installations_aquatiques&gt;
+  &lt;patinoires&gt;
+    &lt;item&gt;
+        &lt;id&gt;157&lt;/id&gt;
+        &lt;nom&gt;Aire de glissade ,Don-Bosco ()&lt;/nom&gt;
+        &lt;arrondissement&gt;
+            &lt;id&gt;12&lt;/id&gt;
+            &lt;nom&gt;Rivière-des-Prairies-Pointe-aux-Trembles&lt;/nom&gt;
+            &lt;cle&gt;rdp&lt;/cle&gt;
+            &lt;date_maj&gt;2021-10-18T13:45:13&lt;/date_maj&gt;
+        &lt;/arrondissement&gt;
+        &lt;date_heure&gt;2021-10-18 13:45:13&lt;/date_heure&gt;
+        &lt;ouvert&gt;0&lt;/ouvert&gt;
+        &lt;deblaye&gt;0&lt;/deblaye&gt;
+        &lt;arrose&gt;0&lt;/arrose&gt;
+        &lt;resurface&gt;0&lt;/resurface&gt;
+    &lt;/item&gt;
+    &lt;item&gt;
+        &lt;id&gt;1&lt;/id&gt;
+        &lt;nom&gt;Aire de glissade, Ahuntsic ()&lt;/nom&gt;
+        &lt;arrondissement&gt;
+            &lt;id&gt;0&lt;/id&gt;
+            &lt;nom&gt;Ahuntsic-Cartierville&lt;/nom&gt;
+            &lt;cle/&gt;
+            &lt;date_maj/&gt;
+        &lt;/arrondissement&gt;
+        &lt;date_heure&gt;2021-04-20 11:10:36&lt;/date_heure&gt;
+        &lt;ouvert&gt;0&lt;/ouvert&gt;
+        &lt;deblaye&gt;0&lt;/deblaye&gt;
+        &lt;arrose&gt;0&lt;/arrose&gt;
+        &lt;resurface&gt;0&lt;/resurface&gt;
+    &lt;/item&gt;
+  &lt;/patinoires&gt;
+&lt;/installations&gt;
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne est survenue. Elle a été envoyée à l&#39;équipe de développement.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_names"><span class="parent">/v1/installations</span>/names</a> <span class="methods"><a href="#v1_installations_names_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_v1_installations_names" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_names_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retourne les noms de toutes les installations, en ordre alphabétique.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_names_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/v1/installations</span>/names</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retourne les noms de toutes les installations, en ordre alphabétique.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_names_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_names_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La liste des noms a été correctement envoyée.</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Type</strong>: array</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{[
+  "Saint-Jean-Baptiste",
+  "Centre sportif St-Charles",
+  "Parc Normand Dawe",
+  "Parc Beaulac",
+  "Parc Cooney"
+]}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne est survenue. Elle a été envoyée à l&#39;équipe de développement.</p></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_subscribers"><span class="parent">/v1</span>/subscribers</a> <span class="methods"><a href="#v1_subscribers_post"><span class="badge badge_post">post</span></a></span></h4></div><div id="panel_v1_subscribers" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_subscribers_post'" class="list-group-item"><span class="badge badge_post">post</span><div class="method_description"><p>S&#39;abonner aux alertes par courriel</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_subscribers_post"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_post">post</span> <span class="parent">/v1</span>/subscribers</h4></div><div class="modal-body"><div class="alert alert-info"><p>S&#39;abonner aux alertes par courriel</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_subscribers_post_request" data-toggle="tab">Request</a></li><li><a href="#v1_subscribers_post_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_subscribers_post_request"><h3>Query Parameters</h3><ul><li><strong>subscriber</strong>: <em><span class="required">required</span>(json)</em><p>Les informations de la personne</p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+  "full_name":"Alex",
+  "email":"courriel@hebergeur.com",
+  "boroughs_to_follow":[1,2,3]
+}
+</code></pre></div></li></ul></div><div class="tab-pane" id="v1_subscribers_post_response"><h2>HTTP status code <a href="http://httpstatus.es/201" target="_blank">201</a></h2><p>La personne s&#39;est abonné avec succès.</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: json</p><p><strong>Content</strong>:</p><pre><code>{
+ "$schema" : "https://json-schema.org/draft/2020-12/schema#",
+ "title" : "Nouvel abonné",
+ "description" : "Valider les informations d&#39;un nouvel abonné",
+ "type" : "object",
+ "properties" : {
+    "full_name" : {
+       "description" : "Nom complet",
+       "type" : "string",
+       "minLength" : 1,
+       "maxLength": 64
+    },
+    "email" : {
+       "description" : "Courriel",
+       "type" : "string",
+       "minLength" : 1,
+       "maxLength" : 64,
+       "pattern" : "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+    },
+    "boroughs_to_follow" : {
+       "description" : "ID des arrondissements à suivre",
+       "type" : "array",
+       "items" : {
+          "type" : "integer"
+       },
+       "maxLength" : 255,
+       "uniqueItems" : true
+    }
+ },
+ "required" : [
+    "full_name",
+    "email"
+ ]
+}
+</code></pre><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+  "full_name":"Alex",
+  "email":"courriel@hebergeur.com",
+  "boroughs_to_follow":[1,2,3]
+}
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/400" target="_blank">400</a></h2><p>Les données fournies ne sont pas valides.</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>status</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+  "error": "Les données fournies ne sont pas valides."
+}
+</code></pre><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne s&#39;est produite. L&#39;erreur a été signalée à l&#39;équipe de développement.</p><h3>Body</h3><p><strong>Media type</strong>: type</p><p><strong>Type</strong>: object</p><strong>Properties</strong><ul><li><strong>status</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>message</strong>: <em><span class="required">required</span>(string)</em></li></ul><p><strong>Media type</strong>: example</p><p><strong>Type</strong>:</p><pre><code>{
+  "error": "Une erreur est survenue lors de l&#39;ajout dans la base de données."
+}
+</code></pre></div></div></div></div></div></div></div><div class="panel panel-white resource-modal"><div class="panel-heading"><h4 class="panel-title"><a class="collapsed" data-toggle="collapse" href="#panel_v1_installations_maj_2021"><span class="parent">/v1</span>/installations-maj-2021</a> <span class="methods"><a href="#v1_installations_maj_2021_get"><span class="badge badge_get">get</span></a></span></h4></div><div id="panel_v1_installations_maj_2021" class="panel-collapse collapse"><div class="panel-body"><div class="list-group"><div onclick="window.location.href = '#v1_installations_maj_2021_get'" class="list-group-item"><span class="badge badge_get">get</span><div class="method_description"><p>Retourne la liste des installations mises à jour en 2021. La liste est triée en ordre alphabétique.</p></div><div class="clearfix"></div></div></div></div></div><div class="modal fade" tabindex="0" id="v1_installations_maj_2021_get"><div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 class="modal-title" id="myModalLabel"><span class="badge badge_get">get</span> <span class="parent">/v1</span>/installations-maj-2021</h4></div><div class="modal-body"><div class="alert alert-info"><p>Retourne la liste des installations mises à jour en 2021. La liste est triée en ordre alphabétique.</p></div><ul class="nav nav-tabs"><li class="active"><a href="#v1_installations_maj_2021_get_response" data-toggle="tab">Response</a></li></ul><div class="tab-content"><div class="tab-pane active" id="v1_installations_maj_2021_get_response"><h2>HTTP status code <a href="http://httpstatus.es/200" target="_blank">200</a></h2><p>La liste des installations a été correctement envoyée.</p><h3>Body</h3><p><strong>Media type</strong>: application/json</p><p><strong>Possible types</strong>:<ul><li><p><strong>Glissade</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement</strong>: <em><span class="required">required</span>(object)</em><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>cle</strong>: <em>(string)</em></li><li><strong>date_maj</strong>: <em>(datetime-only)</em></li></ul></li><li><strong>ouvert</strong>: <em>(boolean)</em></li><li><strong>deblaye</strong>: <em>(boolean)</em></li><li><strong>condition</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>InstallationAquatique</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>type</strong>: <em>(string)</em></li><li><strong>adresse</strong>: <em>(string)</em></li><li><strong>propriete</strong>: <em>(string)</em></li><li><strong>gestion</strong>: <em>(string)</em></li><li><strong>equipement</strong>: <em>(string)</em></li></ul></div></li><li><p><strong>Patinoire</strong></p><div class="items"><ul><li><strong>id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>nom</strong>: <em><span class="required">required</span>(string)</em></li><li><strong>arrondissement_id</strong>: <em><span class="required">required</span>(number)</em></li><li><strong>date_heure</strong>: <em><span class="required">required</span>(datetime-only)</em></li><li><strong>ouvert</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>deblaye</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>arrose</strong>: <em><span class="required">required</span>(boolean)</em></li><li><strong>resurface</strong>: <em><span class="required">required</span>(boolean)</em></li></ul></div></li></ul></p><p><strong>Example</strong>:</p><div class="examples"><pre><code>{
+    "glissades":[{
+        "id":3,
+        "nom":"Glissade, Parc Arthur-Therrien",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "ouvert":0,
+        "deblaye":0,
+        "condition":"N/A"
+        }
+    ],
+    "installations_aquatiques":[{
+        "id":3,
+        "nom":"Parc Normand Dawe",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "type":"Jeu d&#39;eau",
+        "adresse":"1 060, Rue Woodland",
+        "propriete":"Municipale",
+        "gestion":"Municipale",
+        "equipement":""
+        }
+    ],
+    "patinoires":[{
+        "id":251,
+        "nom":"Glissade, Parc Arthur-Therrien ()",
+        "arrondissement":{
+            "id":16,
+            "nom":"Verdun",
+            "cle":"ver",
+            "date_maj":"2021-11-15T12:18:10"
+        },
+        "date_heure":"2021-11-15 12:18:10",
+        "ouvert":0,
+        "deblaye":0,
+        "arrose":0,
+        "resurface":0
+        }
+    ]
+}
+</code></pre></div><h2>HTTP status code <a href="http://httpstatus.es/500" target="_blank">500</a></h2><p>Une erreur interne est survenue. Elle a été envoyée à l&#39;équipe de développement.</p></div></div></div></div></div></div></div></div></div></div></div><div class="col-md-3"><div id="sidebar" class="hidden-print affix" role="complementary"><ul class="nav nav-pills nav-stacked"><li><a href="#v1">/v1</a></li></ul></div></div></div></div></body></html>
