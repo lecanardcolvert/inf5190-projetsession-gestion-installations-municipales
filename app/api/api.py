@@ -18,8 +18,18 @@ from model.patinoire import Patinoire, PatinoireModel
 from model.subscriber import Subscriber, SubscriberModel
 from utils.shared import db
 
-api = Blueprint("api", __name__, url_prefix="/api")
+api = Blueprint("api", __name__, url_prefix="/api/v1")
+playground_slide_schema = GlissadeModel()
 
+def _get_json_schema():
+    """
+    Open a json schema file, and return the data.
+    Returns:
+    object -- The object containing the json data
+    """
+    with open("user_schema.json", "r") as file:
+        schema = json.load(file)
+    return schema
 
 def _get_all_facilities():
     """
@@ -94,6 +104,33 @@ def _validate_json(schema_filename, json_data):
         return False
     return True
 
+# TODO: not working for now
+# def validate_schema(schema):
+#     """
+#     Decorator for validating request using schema
+#
+#     Keyword arguments:
+#     schema -- The schema which will be used to validate request
+#     """
+#
+#     def inner_function(f):
+#         @wraps(f)
+#         def decorated(*args, **kwargs):
+#             validate(instance=request.json, schema=schema)
+#             f(*args, **kwargs)
+#
+#         return decorated
+#
+#     return inner_function
+
+@api.app_errorhandler(ValidationError)
+def give_validation_error(e):
+    """Give an error response when request validation fails."""
+
+    return (
+        jsonify({"error": {"code": "Bad Request", "message": e.message}}),
+        400,
+    )
 
 @api.route("/abonnement", methods=["POST"])
 def subscribe():
@@ -289,3 +326,37 @@ def facility_name_search():
             "patinoires": serialized_ice_rinks,
         }
     )
+
+@api.route("/installations/glissades/<id>", methods=["PUT"])
+# @validate_schema(update_playground_slide_schema)
+def update_playground_slide(id):
+    """
+    Update a playground_slide
+    keyword arguments:
+    id -- the id of the playground slide
+    """
+
+    query = Glissade.query.filter(Glissade.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this playground_slide",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        validate(instance=request.json, schema=update_playground_slide_schema)
+        playground_slide = Glissade.query.get(id)
+        playground_slide.nom = request.json["nom"]
+        playground_slide.arrondissement_id = request.json["arrondissement_id"]
+        playground_slide.ouvert = request.json["ouvert"]
+        playground_slide.deblaye = request.json["deblaye"]
+        playground_slide.condition = request.json["condition"]
+        db.session.commit()
+        return playground_slide_schema.jsonify(playground_slide), 200
