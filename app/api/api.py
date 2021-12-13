@@ -4,6 +4,7 @@ import json
 import jsonschema
 from dicttoxml import dicttoxml
 from jsonschema import validate
+from jsonschema.exceptions import ValidationError
 from flask import Blueprint, jsonify, request, Response
 from sqlalchemy import exc
 from sqlalchemy.orm import contains_eager
@@ -11,15 +12,19 @@ from xml.dom.minidom import parseString
 
 # Custom modules
 from model.arrondissement import Arrondissement, ArrondissementModel
-from model.installation_aquatique import InstallationAquatique, \
-    InstallationAquatiqueModel
+from model.installation_aquatique import (
+    InstallationAquatique,
+    InstallationAquatiqueModel,
+)
 from model.glissade import Glissade, GlissadeModel
 from model.patinoire import Patinoire, PatinoireModel
 from model.subscriber import Subscriber, SubscriberModel
+from schemas.schemas import update_playground_slide_schema
 from utils.shared import db
 
 api = Blueprint("api", __name__, url_prefix="/api/v1")
 playground_slide_schema = GlissadeModel()
+
 
 def _get_json_schema():
     """
@@ -30,6 +35,7 @@ def _get_json_schema():
     with open("user_schema.json", "r") as file:
         schema = json.load(file)
     return schema
+
 
 def _get_all_facilities():
     """
@@ -56,22 +62,22 @@ def _get_facilities_updated_2021():
 
     slides = (
         Glissade.query.join(Glissade.arrondissement)
-            .filter(Arrondissement.date_maj.like(year + "%"))
-            .options(contains_eager(Glissade.arrondissement))
-            .order_by(Glissade.nom.asc())
-            .all()
+        .filter(Arrondissement.date_maj.like(year + "%"))
+        .options(contains_eager(Glissade.arrondissement))
+        .order_by(Glissade.nom.asc())
+        .all()
     )
     aquatic_facilities = (
         InstallationAquatique.query.join(InstallationAquatique.arrondissement)
-            .filter(Arrondissement.date_maj.like(year + "%"))
-            .options(contains_eager(InstallationAquatique.arrondissement))
-            .order_by(InstallationAquatique.nom.asc())
-            .all()
+        .filter(Arrondissement.date_maj.like(year + "%"))
+        .options(contains_eager(InstallationAquatique.arrondissement))
+        .order_by(InstallationAquatique.nom.asc())
+        .all()
     )
     skating_rinks = (
         Patinoire.query.filter(Patinoire.date_heure.contains(year))
-            .order_by(Patinoire.nom.asc())
-            .all()
+        .order_by(Patinoire.nom.asc())
+        .all()
     )
 
     aquatic_installation_model = InstallationAquatiqueModel(many=True)
@@ -104,6 +110,7 @@ def _validate_json(schema_filename, json_data):
         return False
     return True
 
+
 # TODO: not working for now
 # def validate_schema(schema):
 #     """
@@ -123,6 +130,7 @@ def _validate_json(schema_filename, json_data):
 #
 #     return inner_function
 
+
 @api.app_errorhandler(ValidationError)
 def give_validation_error(e):
     """Give an error response when request validation fails."""
@@ -131,6 +139,7 @@ def give_validation_error(e):
         jsonify({"error": {"code": "Bad Request", "message": e.message}}),
         400,
     )
+
 
 @api.route("/abonnement", methods=["POST"])
 def subscribe():
@@ -154,7 +163,8 @@ def subscribe():
         subscriber = Subscriber(
             request_data["full_name"],
             request_data["email"],
-            request_data["boroughs_to_follow"])
+            request_data["boroughs_to_follow"],
+        )
 
         try:
             db.session.add(subscriber)
@@ -164,15 +174,20 @@ def subscribe():
             return jsonify(serialized_subscriber), 201
         except exc.SQLAlchemyError as err:
             return (
-                jsonify({
-                    "error": "Une erreur est survenue lors de l'ajout dans"
-                             " la base de données."
-                }), 500)
+                jsonify(
+                    {
+                        "error": "Une erreur est survenue lors de l'ajout dans"
+                        " la base de données."
+                    }
+                ),
+                500,
+            )
 
     else:
         return (
             jsonify({"error": "Les données fournies ne sont pas valides."}),
-            400)
+            400,
+        )
 
 
 @api.route("/arrondissements", methods=["GET"])
@@ -204,13 +219,15 @@ def facilities():
     aquatic_facilities, ice_rinks, slides = _get_all_facilities()
     arr_filter = request.args.get("arrondissement")
     if arr_filter is not None:
-        slides = Glissade.query \
-            .filter(Glissade.arrondissement.has(nom=arr_filter)).all()
-        aquatic_facilities = InstallationAquatique.query \
-            .filter(
-            InstallationAquatique.arrondissement.has(nom=arr_filter)).all()
-        ice_rinks = Patinoire.query \
-            .filter(Patinoire.arrondissement.has(nom=arr_filter)).all()
+        slides = Glissade.query.filter(
+            Glissade.arrondissement.has(nom=arr_filter)
+        ).all()
+        aquatic_facilities = InstallationAquatique.query.filter(
+            InstallationAquatique.arrondissement.has(nom=arr_filter)
+        ).all()
+        ice_rinks = Patinoire.query.filter(
+            Patinoire.arrondissement.has(nom=arr_filter)
+        ).all()
 
     aquatic_installation_model = InstallationAquatiqueModel(many=True)
     ice_rink_model = PatinoireModel(many=True)
@@ -258,13 +275,15 @@ def facilities_updated_2021_xml():
     xml_data = [
         '<?xml version="1.0" encoding="utf-8"?><installations><glissades>',
         dicttoxml(slides, root=False, attr_type=False).decode("utf-8"),
-        '</glissades><installations_aquatiques>',
-        dicttoxml(aquatic_facilities, root=False, attr_type=False)
-            .decode("utf-8"),
-        '</installations_aquatiques><patinoires>',
+        "</glissades><installations_aquatiques>",
+        dicttoxml(aquatic_facilities, root=False, attr_type=False).decode(
+            "utf-8"
+        ),
+        "</installations_aquatiques><patinoires>",
         dicttoxml(ice_rinks, root=False, attr_type=False).decode("utf-8"),
-        '</patinoires></installations>']
-    joined_xml_data = ''.join(xml_data)
+        "</patinoires></installations>",
+    ]
+    joined_xml_data = "".join(xml_data)
     parsed_xml_data = parseString(joined_xml_data)
     pretty_xml_data = parsed_xml_data.toprettyxml()
 
@@ -305,11 +324,12 @@ def facility_name_search():
     Returns:
     json -- The list of facilities in json format
     """
-    name_filter = request.args.get('nom')
+    name_filter = request.args.get("nom")
     if name_filter is not None:
         slides = Glissade.query.filter(Glissade.nom == name_filter).all()
-        aquatic_facilities = InstallationAquatique.query \
-            .filter(InstallationAquatique.nom == name_filter).all()
+        aquatic_facilities = InstallationAquatique.query.filter(
+            InstallationAquatique.nom == name_filter
+        ).all()
         ice_rinks = Patinoire.query.filter(Patinoire.nom == name_filter).all()
 
     aquatic_installation_model = InstallationAquatiqueModel(many=True)
@@ -326,6 +346,7 @@ def facility_name_search():
             "patinoires": serialized_ice_rinks,
         }
     )
+
 
 @api.route("/installations/glissades/<id>", methods=["PUT"])
 # @validate_schema(update_playground_slide_schema)
