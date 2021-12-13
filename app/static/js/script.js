@@ -19,7 +19,7 @@ $(document).ready(function() {
     xhr.onreadystatechange = function() {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.status === 201) {
-          window.location.href = 'abonnement-merci';
+          window.location.href = 'subscribe-success';
         } else {
           console.log(xhr.response.error);
           $("#subscribe-error").text(xhr.response.error);

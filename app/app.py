@@ -55,7 +55,7 @@ def update_database():
         print(" * UPDATE FINISHED")
 
 
-@app.route("/abonnement", methods=["GET"])
+@app.route("/subscribe", methods=["GET"])
 def subscribe():
     borough_list = Arrondissement.query.all()
     borough_model = ArrondissementModel(many=True)
@@ -63,7 +63,7 @@ def subscribe():
     return render_template("subscribe.html", boroughs=serialized_boroughs)
 
 
-@app.route("/abonnement-merci", methods=["GET"])
+@app.route("/subscribe-success", methods=["GET"])
 def subscribe_success():
     return render_template("subscribe-success.html")
 

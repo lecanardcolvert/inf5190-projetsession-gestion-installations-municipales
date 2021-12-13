@@ -141,7 +141,7 @@ def give_validation_error(e):
     )
 
 
-@api.route("/abonnement", methods=["POST"])
+@api.route("/subscribers", methods=["POST"])
 def subscribe():
     """
     Insert a new subscriber in the database.
