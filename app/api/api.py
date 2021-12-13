@@ -24,6 +24,8 @@ from utils.shared import db
 
 api = Blueprint("api", __name__, url_prefix="/api/v1")
 playground_slide_schema = GlissadeModel()
+aquatic_installation_schema = InstallationAquatiqueModel()
+ice_rink_schema = PatinoireModel()
 
 
 def _get_json_schema():
@@ -410,3 +412,61 @@ def delete_playground_slide(id):
         db.session.delete(playground_slide)
         db.session.commit()
         return playground_slide_schema.jsonify(playground_slide), 204
+
+
+@api.route("/installations/aquatics/<id>", methods=["DELETE"])
+def delete_aquatic_installation(id):
+    """
+    Delete a aquatic_installation
+    keyword arguments:
+    id -- the id of the aquatic installation
+    """
+
+    query = InstallationAquatique.query.filter(InstallationAquatique.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this aquatic installation",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        aquatic_installation = InstallationAquatique.query.get(id)
+        db.session.delete(aquatic_installation)
+        db.session.commit()
+        return aquatic_installation_schema.jsonify(aquatic_installation), 204
+
+
+@api.route("/installations/ice-rinks/<id>", methods=["DELETE"])
+def delete_ice_rink(id):
+    """
+    Delete an ice rink
+    keyword arguments:
+    id -- the id of the ice rink
+    """
+
+    query = Patinoire.query.filter(Patinoire.id == id)
+    result = query.first()
+    if result is None:
+        return (
+            jsonify(
+                {
+                    "error": {
+                        "code": "Not Found",
+                        "message": "Can't find this ice rink",
+                    }
+                }
+            ),
+            404,
+        )
+    else:
+        ice_rink = Patinoire.query.get(id)
+        db.session.delete(ice_rink)
+        db.session.commit()
+        return ice_rink_schema.jsonify(ice_rink), 204
