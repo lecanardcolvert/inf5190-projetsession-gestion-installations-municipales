@@ -1,4 +1,4 @@
 mail:
-  destination: "sallyaxel@gmail.com"
+  recipient: "sallyaxel@gmail.com"
   subject: "INF5190 - PROJET DE SESSION"
 

@@ -1,12 +1,12 @@
 # Native and installed modules
 import atexit
 import os
-from flask import Flask, render_template
 from apscheduler.schedulers.background import BackgroundScheduler
+from flask import Flask, render_template, g
 
 # Custom modules
+import config
 from api.api import api
-from config import Config, DB_PATH
 from model.arrondissement import Arrondissement, ArrondissementModel
 from routes.router import router
 from utils.shared import db
@@ -14,7 +14,7 @@ from utils.update_database import create_or_update_database
 
 # App configurations
 app = Flask(__name__, static_folder="static", static_url_path="/")
-app.config.from_object(Config)
+app.config.from_object(config.config["development"])
 app.config["JSON_AS_ASCII"] = False
 app.config["JSON_SORT_KEYS"] = False
 
@@ -39,14 +39,23 @@ app.register_blueprint(router)
 
 # Create database if it doesn't exist yet
 with app.app_context():
-    if not os.path.isfile(DB_PATH):
+    if not os.path.isfile(config.DB_PATH):
         print(" * CREATING DATABASE")
+        g.LAST_DATABASE_ACTION = "CREATE"
         db.create_all()
         create_or_update_database()
         print(" * CREATION FINISHED")
 
 
-@app.route("/abonnement", methods=["GET"])
+def update_database():
+    with app.app_context():
+        print(" * UPDATING DATABASE")
+        g.LAST_DATABASE_ACTION = "UPDATE"
+        create_or_update_database()
+        print(" * UPDATE FINISHED")
+
+
+@app.route("/subscribe", methods=["GET"])
 def subscribe():
     borough_list = Arrondissement.query.all()
     borough_model = ArrondissementModel(many=True)
@@ -54,16 +63,9 @@ def subscribe():
     return render_template("subscribe.html", boroughs=serialized_boroughs)
 
 
-@app.route("/abonnement-merci", methods=["GET"])
+@app.route("/subscribe-success", methods=["GET"])
 def subscribe_success():
     return render_template("subscribe-success.html")
-
-
-def update_database():
-    with app.app_context():
-        print(" * UPDATING DATABASE")
-        create_or_update_database()
-        print(" * UPDATE FINISHED")
 
 
 @app.errorhandler(404)
